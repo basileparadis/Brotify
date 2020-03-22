@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="80cc6c47-4f99-4d79-945f-54d12ecef603" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Brotify/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Brotify/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Brotify/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Brotify/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/brotify-db" beforeDir="false" afterPath="$PROJECT_DIR$/brotify-db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

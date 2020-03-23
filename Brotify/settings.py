@@ -130,3 +130,4 @@ STATIC_URL = '/static/'
 # Specify where to redirect the user upon a successful login/logout
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+SOCIAL_AUTH_URL_NAMESPACE = 'social'

@@ -1,3 +1,14 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views import generic
+
+
+class SignUp(generic.CreateView):
+    form_class = UserCreationForm
+    # Reverse_lazy because for all generic class-based views the urls are not loaded when the file is imported
+    # So we have to use the lazy form of reverse to load them later when they're available
+    success_url = reverse_lazy('login')
+    template_name = 'signup.html'

@@ -22,5 +22,6 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', include('django.contrib.auth.urls')),
     path('social/', include('social_django.urls')),
+    path('', include('biblio.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]

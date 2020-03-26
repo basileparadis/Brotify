@@ -15,6 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+ROOT_PATH = os.path.dirname(__file__)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'social_django',
     'biblio',
+    'bulma',
 ]
 
 MIDDLEWARE = [
@@ -127,6 +130,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(ROOT_PATH, 'static')]
 
 # Specify where to redirect the user upon a successful login/logout
 LOGIN_REDIRECT_URL = 'home'

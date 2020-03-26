@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load bulma_tags %}
 
 {% block title %}Connectez-vous sur Brotify{% endblock %}
 
@@ -6,7 +7,7 @@
   <h2>Se connecter à Brotify</h2>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Connexion</button>
+   {{ form|bulma }}
+    <button type="submit" class="button is-primary">Connexion</button>
   </form>
 {% endblock %}

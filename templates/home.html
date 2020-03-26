@@ -3,13 +3,13 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-  Bienvenue {{ user.username }}!
-  <p><a href="{% url 'social:begin' 'spotify' %}">Se connecter à Spotify</a></p>
-  <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
-{% else %}
-  <p>Vous n'êtes pas connecté</p>
-  <a href="{% url 'login' %}">Se connecter</a>
-  <a href="{% url 'signup' %}">S'inscrire</a>
-{% endif %}
+  {% if user.is_authenticated %}
+    Bienvenue {{ user.username }}!
+    <p><a href="{% url 'social:begin' 'spotify' %}"><span class="fa fa-spotify"></span> Se connecter à Spotify</a></p>
+    <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
+  {% else %}
+    <p>Vous n'êtes pas connecté</p>
+    <a href="{% url 'login' %}">Se connecter</a>
+    <a href="{% url 'signup' %}">S'inscrire</a>
+  {% endif %}
 {% endblock %}

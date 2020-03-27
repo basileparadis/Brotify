@@ -7,8 +7,26 @@
 @import "./node_modules/bulma/bulma"
 
 // 4. Import your stuff here
+@font-face
+  font-family: Gotham;
+  src: url("../GothamHTF-Bold.otf");
 
-body
-    display: flex
-    min-height: 100vh
-    flex-direction: column
+html
+    font-family: Gotham;
+    overflow: hidden
+    background-color: #191414
+
+    .navbar
+        background-color: #1DB954
+
+    .container
+        display: flex
+        flex-direction: column
+        justify-content: center
+        height: 80vh
+
+        .button
+            background-color: #1DB954
+
+    .footer
+        background-color: lightgray

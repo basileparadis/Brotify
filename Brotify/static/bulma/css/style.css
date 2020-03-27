@@ -10548,10 +10548,34 @@ label.panel-block:hover {
   padding: 3rem 1.5rem 6rem;
 }
 
-body {
+@font-face {
+  font-family: Gotham;
+  src: url("../GothamHTF-Bold.otf");
+}
+
+html {
+  font-family: Gotham;
+  overflow: hidden;
+  background-color: #191414;
+}
+
+html .navbar {
+  background-color: #1DB954;
+}
+
+html .container {
   display: flex;
-  min-height: 100vh;
   flex-direction: column;
+  justify-content: center;
+  height: 80vh;
+}
+
+html .container .button {
+  background-color: #1DB954;
+}
+
+html .footer {
+  background-color: lightgray;
 }
 
 /*# sourceMappingURL=style.css.map */

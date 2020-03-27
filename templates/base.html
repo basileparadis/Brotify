@@ -6,12 +6,13 @@
     <title>{% block title %}Brotify{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link rel="stylesheet" href="/static/bulma/css/style.css">
   </head>
   <body>
-    <nav class="navbar is-success" role="navigation" aria-label="main navigation">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item has-text-black" href="/">
-            <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x"></i></span>
+            <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x" data-fa-transform="rotate-180"></i></span>
             <span>Brotify</span>
           </a>
           {% if user.is_authenticated %}
@@ -35,18 +36,18 @@
           <div class="navbar-item">
             <div class="buttons">
               {% if user.is_authenticated %}
-                <a class="button is-light">Bienvenue {{ user.username }}!</a>
+                <span class="button is-light is-rounded is-static">Bienvenue {{ user.username }}!</span>
                 <a class="button is-light" href="{% url 'logout' %}">Se déconnecter</a>
               {% else %}
-                <a class="button is-primary is-inverted" href="{% url 'signup' %}"><span class="icon"><i class="fas fa-sign-in-alt"></i></span><span>S'inscrire</span></a>
+                <a class="button is-primary is-inverted has-text-success" href="{% url 'signup' %}"><span class="icon"><i class="fas fa-sign-in-alt"></i></span><span>S'inscrire</span></a>
                 <a class="button is-light is-inverted" href="{% url 'login' %}"><strong>Se connecter</strong></a>
               {% endif %}
             </div>
           </div>
         </div>
     </nav>
-    <div class="container">
-      <div class="notification column is-4 is-offset-4">
+    <div class="container has-text-centered">
+      <div class="box column is-three-fifths is-offset-one-fifth">
       {% block content %}
       {% endblock %}
       </div>

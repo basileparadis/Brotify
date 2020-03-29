@@ -5,11 +5,12 @@
 {% block content %}
   <img src="static/bro.webp">
   {% if user.is_authenticated %}
-    <p>Bienvenue {{ user.username }}!</p>
+    <p><strong>Bienvenue {{ user.username }}!</strong></p>
+    <p><small>Dernière connexion le {{ user.last_login }}</small></p>
     <p><a href="{% url 'social:begin' 'spotify' %}"><span class="fas fa-sign-in-alt"></span> Se connecter à Spotify</a></p>
     <p><a href="{% url 'logout' %}"><span class="fas fa-sign-out-alt"></span>Se déconnecter de Brotify</a></p>
   {% else %}
-    <strong>Bienvenue sur Brotify!</strong>
+    <p><strong>Bienvenue sur Brotify!</strong></p>
     <p>Vous n'êtes pas connecté</p>
     <a href="{% url 'login' %}">Se connecter</a>
     <a href="{% url 'signup' %}">S'inscrire</a>

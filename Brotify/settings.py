@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'social_django',
     'biblio',
     'bulma',
+    'friendship',
+    'friends',
 ]
 
 MIDDLEWARE = [
@@ -133,8 +135,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(ROOT_PATH, 'static')]
 
 # Specify where to redirect the user upon a successful login/logout
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 SOCIAL_AUTH_PIPELINE = (
@@ -144,8 +148,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_user',
     'social_core.pipeline.user.get_username',
     'social_core.pipeline.user.create_user',
-    'biblio.views.save_profile',
     'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.associate_by_email',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Amis{% endblock %}
+
+{% block content %}
+    {{users}}
+    {% load friendshiptags %}
+    {% friends request.user %}
+    {% followers request.user %}
+    {% following request.user %}
+    {% friend_requests request.user %}
+    {% blockers request.user %}
+    {% blocking request.user %}
+{% endblock %}

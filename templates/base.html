@@ -26,9 +26,9 @@
         <div id="navbarBasicExample" class="navbar-menu">
           {% if user.is_authenticated %}
           <div class="navbar-start">
-            <a class="navbar-item">Accueil</a>
-            <a class="navbar-item">Ma bibliothèque</a>
-            <a class="navbar-item">Mes amis</a>
+            <a class="navbar-item" href="/">Accueil</a>
+            <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
+            <a class="navbar-item" href="/amis">Mes amis</a>
           </div>
           {% endif %}
         </div>

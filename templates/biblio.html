@@ -2,6 +2,10 @@
 
 {% block title %}Biblio{% endblock %}
 
-{% block content %}
-    {{ user.friends }}
-{% endblock %}
+<div class="container has-text-centered">
+  <div class="box column is-4 is-offset-one-third">
+    {% block content %}
+        {{ user.friends }}
+    {% endblock %}
+  </div>
+</div>

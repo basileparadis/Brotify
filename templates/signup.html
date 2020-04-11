@@ -5,9 +5,14 @@
 
 {% block content %}
   <h2>Créer votre compte</h2>
-  <form method="post">
-    {% csrf_token %}
-   {{ form|bulma }}
+  <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.username|bulma }}
+      {{ form.prenom|bulma }}
+      {{ form.nom|bulma }}
+      {{ form.courriel|bulma }}
+      {{ form.avatar|bulma }}
+
     <button type="submit" class="button is-primary">Créer mon compte</button>
   </form>
 {% endblock %}

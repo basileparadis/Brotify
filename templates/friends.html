@@ -2,13 +2,57 @@
 
 {% block title %}Amis{% endblock %}
 
-{% block content %}
-    {{users}}
-    {% load friendshiptags %}
-    {% friends request.user %}
-    {% followers request.user %}
-    {% following request.user %}
-    {% friend_requests request.user %}
-    {% blockers request.user %}
-    {% blocking request.user %}
-{% endblock %}
+<div class="container has-text-centered">
+  <div class="box column is-4 is-offset-one-third">
+    {% block content %}
+
+        {% for user in users %}
+            <div class="box">
+              <article class="media">
+                <div class="media-left">
+                {% if avatar %}
+                  <figure class="image is-64x64">
+                    <img src="{{ avatar.url }}" alt="Avatar">
+                  </figure>
+                {% endif %}
+                </div>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <strong>{{ user.prenom }} {{ user.nom }}</strong> <small>{{ user.username }}</small> <small>31m</small>
+                    </p>
+                  </div>
+                  <nav class="level is-mobile">
+                    <div class="level-left">
+                      <a class="level-item" aria-label="reply">
+                        <span class="icon is-small">
+                          <i class="fas fa-reply" aria-hidden="true"></i>
+                        </span>
+                      </a>
+                      <a class="level-item" aria-label="retweet">
+                        <span class="icon is-small">
+                          <i class="fas fa-retweet" aria-hidden="true"></i>
+                        </span>
+                      </a>
+                      <a class="level-item" aria-label="like">
+                        <span class="icon is-small">
+                          <i class="fas fa-heart" aria-hidden="true"></i>
+                        </span>
+                      </a>
+                    </div>
+                  </nav>
+                </div>
+              </article>
+            </div>
+        {% endfor %}
+
+        {% load friendshiptags %}
+        {% friends request.user %}
+        {% followers request.user %}
+        {% following request.user %}
+        {% friend_requests request.user %}
+        {% blockers request.user %}
+        {% blocking request.user %}
+    {% endblock %}
+  </div>
+</div>

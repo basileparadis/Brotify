@@ -5,21 +5,22 @@
 <div class="container has-text-centered">
   <div class="box column is-4 is-offset-one-third">
     {% block content %}
-
+        {% load friendshiptags %}
         {% for user in users %}
             <div class="box">
               <article class="media">
                 <div class="media-left">
-                {% if avatar %}
+                {% if social %}
+                    {{ social }}
                   <figure class="image is-64x64">
-                    <img src="{{ avatar.url }}" alt="Avatar">
+                    <img src="{{ social.avatar }}" alt="Avatar">
                   </figure>
                 {% endif %}
                 </div>
                 <div class="media-content">
                   <div class="content">
                     <p>
-                      <strong>{{ user.prenom }} {{ user.nom }}</strong> <small>{{ user.username }}</small> <small>31m</small>
+                      <strong>{{ user.first_name }} {{ user.last_name }}</strong> <small>{{ user.username }}</small> <small>31m</small>
                     </p>
                   </div>
                   <nav class="level is-mobile">
@@ -45,14 +46,8 @@
               </article>
             </div>
         {% endfor %}
-
-        {% load friendshiptags %}
         {% friends request.user %}
-        {% followers request.user %}
-        {% following request.user %}
         {% friend_requests request.user %}
-        {% blockers request.user %}
-        {% blocking request.user %}
     {% endblock %}
   </div>
 </div>

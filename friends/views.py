@@ -6,16 +6,16 @@ from django.template import loader
 from friendship.models import Friend, Follow, Block
 
 # Create your views here.
-from accounts.models import UserProfile
+from accounts.models import SocialUser
 
 
 @login_required
 def index(request):
     users = User.objects.all()
-    avatar = UserProfile.avatar
+    social_user = SocialUser.objects.all().order_by('-id')
     template = loader.get_template('friends.html')
     context = {
         'users': users,
-        'avatar': avatar,
+        'social': social_user,
     }
     return HttpResponse(template.render(context, request))

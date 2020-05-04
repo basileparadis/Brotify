@@ -2,52 +2,42 @@
 
 {% block title %}Amis{% endblock %}
 
-<div class="container has-text-centered">
-  <div class="box column is-4 is-offset-one-third">
+  <div class="box">
     {% block content %}
-        {% load friendshiptags %}
-        {% for user in users %}
-            <div class="box">
-              <article class="media">
-                <div class="media-left">
-                {% if social %}
-                    {{ social }}
-                  <figure class="image is-64x64">
-                    <img src="{{ social.avatar }}" alt="Avatar">
-                  </figure>
-                {% endif %}
-                </div>
-                <div class="media-content">
-                  <div class="content">
-                    <p>
-                      <strong>{{ user.first_name }} {{ user.last_name }}</strong> <small>{{ user.username }}</small> <small>31m</small>
-                    </p>
-                  </div>
-                  <nav class="level is-mobile">
-                    <div class="level-left">
-                      <a class="level-item" aria-label="reply">
-                        <span class="icon is-small">
-                          <i class="fas fa-reply" aria-hidden="true"></i>
-                        </span>
-                      </a>
-                      <a class="level-item" aria-label="retweet">
-                        <span class="icon is-small">
-                          <i class="fas fa-retweet" aria-hidden="true"></i>
-                        </span>
-                      </a>
-                      <a class="level-item" aria-label="like">
-                        <span class="icon is-small">
-                          <i class="fas fa-heart" aria-hidden="true"></i>
-                        </span>
-                      </a>
-                    </div>
-                  </nav>
-                </div>
-              </article>
+      {% load friendshiptags %}
+      {% for user in users %}
+        <div class="box friend-box">
+          <article class="media">
+            <div class="media-left">
+            {% if social %}
+                {{ social }}
+              <figure class="image is-64x64">
+                <img src="{{ social.avatar }}" alt="Avatar">
+              </figure>
+            {% endif %}
             </div>
-        {% endfor %}
-        {% friends request.user %}
-        {% friend_requests request.user %}
+            <div class="media-content">
+              <div class="content">
+                <p>
+                  <strong>{{ user.first_name }} {{ user.last_name }}</strong> <small>{{ user.username }}</small>
+                  {% if user.id not in amis %}
+                  <a aria-label="add-friend">
+                    <span class="icon is-small"><i class="fas fa-user-plus" aria-hidden="true"></i></span>
+                  </a>
+                  {% elif user.id in amis %}
+                  <a aria-label="are-friend">
+                    <span class="icon is-small"><i class="fas fa-user-check" aria-hidden="true"></i></span>
+                  </a>
+                  {% else %}
+                  <a aria-label="pending-friend">
+                    <span class="icon is-small"><i class="fas fa-user-clock" aria-hidden="true"></i></span>
+                  </a>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
     {% endblock %}
   </div>
-</div>

@@ -3,14 +3,18 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
-  <img src="static/bro.webp">
   {% if user.is_authenticated %}
-    <p><strong>Bienvenue {{ user.username }}!</strong></p>
-    <p><small>Dernière connexion le {{ user.last_login }}</small></p>
-    <p><a href="{% url 'social:begin' 'spotify' %}"><span class="fas fa-sign-in-alt"></span> Se connecter à Spotify</a></p>
-
+    <div class="box">
+      <p><strong>Bienvenue {{ user.username }}!</strong></p>
+      <p><small>Dernière connexion le {{ user.last_login }}</small></p>
+    </div>
+      <p><a href="{% url 'social:begin' 'spotify' %}" class="button is-link is-light"><span class="fas fa-sign-in-alt"></span>Se connecter à Spotify</a></p>
+      <form action="{% url 'social:disconnect' 'spotify' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="button is-link is-light"><span class="fas fa-sign-in-alt"></span> Se déconnecter de Spotify</a></button>
+      </form>
   {% if spotify_login %}
-    <p>Connected as <a href="https://spotify.com/{{ spotify_login.extra_data.id }}/" target="_blank">{{ spotify_login.extra_data.id }}</a></p>
+    <p>Connected as <a href="https://spotify.com/{{ social.extra_data.id }}/" target="_blank">{{ spotify_login.extra_data.id }}</a></p>
     {% if can_disconnect %}
       <form method="post" action="{% url 'social:disconnect' 'spotify' %}">
         {% csrf_token %}
@@ -20,11 +24,9 @@
       <button type="button" disabled>Disconnect from Spotify</button>
       <p style="color: red">You must <a href="{% url 'password' %}">define a password</a> for your account before disconnecting from Facebook.</p>
     {% endif %}
-  {% else %}
-    <a href="{% url 'social:begin' 'spotify' %}">Connect to Spotify</a>
   {% endif %}
 
-    <p><a href="{% url 'logout' %}"><span class="fas fa-sign-out-alt"></span>Se déconnecter de Brotify</a></p>
+    <p><a href="{% url 'logout' %}" class="button is-link is-light"><span class="fas fa-sign-out-alt"></span>Se déconnecter de Brotify</a></p>
   {% else %}
     <p><strong>Bienvenue sur Brotify!</strong></p>
     <p>Vous n'êtes pas connecté</p>

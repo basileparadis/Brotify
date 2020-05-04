@@ -10558,6 +10558,16 @@ html {
   background-color: #191414;
 }
 
+html .navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+html .navbar-brand #logo {
+  margin: auto !important;
+  width: 90% !important;
+}
+
 html .navbar {
   background-color: #1DB954;
 }
@@ -10573,6 +10583,11 @@ html .container {
 
 html .container .button {
   background-color: #1DB954;
+}
+
+html .container .friend-box p {
+  display: flex;
+  justify-content: space-around;
 }
 
 html .footer {

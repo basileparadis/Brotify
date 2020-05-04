@@ -1,5 +1,7 @@
 # Create your views here.
 import requests
+import time
+from django.core.exceptions import ObjectDoesNotExist
 from social_django.utils import load_strategy
 from biblio.models import Biblio, Track, Album, Artist
 from django.contrib.auth.decorators import login_required
@@ -11,38 +13,73 @@ from django.shortcuts import render, redirect
 
 @login_required
 def index(request):
-    tracks = receive_info(request)
-    print(tracks)
+    tracks = get_tracks(request)
     return render(request, 'biblio.html', {'tracks': tracks})
 
 
 @login_required
-def receive_info(request):
+def get_access_token(request):
+    user = request.user
+    social = user.social_auth.get(provider='spotify')
+    access_token = social.get_access_token(load_strategy())
+    return access_token
+
+
+@login_required
+def refresh_access_token(request):
+    user = request.user
+    social = user.social_auth.get(provider='spotify')
+    strategy = load_strategy()
+    social.refresh_token(strategy)
+    access_token = social.extra_data['access_token']
+    return access_token
+
+
+def api_request_to_json(url, access_token):
+    response = requests.get(url, params={'access_token': access_token})
+    data = response.json()
+    return data
+
+
+@login_required
+def get_tracks(request):
+    global list_tracks
     try:
         list_tracks = []
-        user = request.user
-        social = user.social_auth.get(provider='spotify')
-        access_token = social.get_access_token(load_strategy())
-        response = requests.get(
-            'https://api.spotify.com/v1/me/tracks',
-            params={'access_token': access_token}
-        )
-        tracks_data = response.json()
-        for i in range(0, len(tracks_data['items'])):
+        data = api_request_to_json('https://api.spotify.com/v1/me/tracks', get_access_token(request))
+        for i in range(0, len(data['items'])):
             # les_artistes = tracks_data['items'][i]['track']['artists']
             # les_albums = tracks_data['items'][i]['track']['album']
-            les_chansons = tracks_data['items'][i]['track']
-            #for chanson in les_chansons:
-                # La chanson
+            les_chansons = data['items'][i]['track']
+            # La chanson
             track = Track.objects.create(
                 # id_track=chanson['id'],
-                id_track=str(les_chansons['id']),
+                id_track=les_chansons['id'],
                 title=les_chansons['name'],
                 artist=les_chansons['artists'][0]['name'],
-                album=les_chansons['album']['name']
+                album=les_chansons['album']['name'],
+                url_cover=les_chansons['album']['images'][1]['url'],
+                url_track=les_chansons['external_urls']['spotify'],
             )
             list_tracks.append(track)
-            '''
+    except KeyError:
+        data = api_request_to_json('https://api.spotify.com/v1/me/tracks', refresh_access_token(request))
+        for i in range(0, len(data['items'])):
+            # les_artistes = tracks_data['items'][i]['track']['artists']
+            # les_albums = tracks_data['items'][i]['track']['album']
+            les_chansons = data['items'][i]['track']
+            # La chanson
+            track = Track.objects.create(
+                # id_track=chanson['id'],
+                id_track=les_chansons['id'],
+                title=les_chansons['name'],
+                artist=les_chansons['artists'][0]['name'],
+                album=les_chansons['album']['name'],
+                url_cover=les_chansons['album']['images'][1]['url'],
+                url_track=les_chansons['external_urls']['spotify'],
+            )
+            list_tracks.append(track)
+        '''
             for artiste in les_artistes:
                 id_artist = artiste['id']
                 # L'artiste de la chanson
@@ -61,9 +98,8 @@ def receive_info(request):
                     name=tracks_data['items'][i]['track']['album']['name'],
                     artist=musician)
             '''
-
-    except KeyError:
-        return 'Key expired'
+    except ObjectDoesNotExist:
+        return 'Introuvable'
     return list_tracks
 
 

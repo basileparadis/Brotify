@@ -11,10 +11,13 @@
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
+          <div class="button is-rounded" id="logo">
           <a class="navbar-item has-text-black" href="/">
-            <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x" data-fa-transform="rotate-180"></i></span>
-            <span>Brotify</span>
+            <!-- <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x" data-fa-transform="rotate-180"></i></span> -->
+            <img src="../static/bro.webp" width="30" height="30">
+            <span><strong>Brotify</strong></span>
           </a>
+            </div>
           {% if user.is_authenticated %}
           <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
             <span aria-hidden="true"></span>
@@ -47,7 +50,7 @@
         </div>
     </nav>
     <div class="container has-text-centered">
-      <div class="box column is-4 is-offset-one-third">
+      <div class="box column is-half is-offset-one-quarter">
       {% block content %}
       {% endblock %}
       </div>

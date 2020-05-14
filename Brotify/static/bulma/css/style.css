@@ -10581,11 +10581,7 @@ html .container {
   min-height: 100vh;
 }
 
-html .container .button {
-  background-color: #1DB954;
-}
-
-html .container .friend-box p {
+html .container #ami {
   display: flex;
   justify-content: space-around;
 }

@@ -6,51 +6,53 @@
     {% block content %}
       {% load friendshiptags %}
       {% for user in users %}
-        <div class="box friend-box">
-          <article class="media">
-            <div class="media-left">
-            {% if social %}
-                {{ social }}
-              <figure class="image is-64x64">
-                <img src="{{ social.avatar }}" alt="Avatar">
-              </figure>
-            {% endif %}
-            </div>
-            <div class="media-content">
-              <div class="content" id="ami">
-                <strong>{{ user.first_name }} {{ user.last_name }}</strong>
-                <small>{{ user.username }}</small>
-                  {% if user.id in id_invitation_sent %}
-                  <a aria-label="pending-friend">
-                    <button type="submit" value="{{ user.id }}" name="are-friend" class="button is-rounded is-inverted is-info">
-                      <i class="fas fa-user-clock" aria-hidden="true"></i>
-                    </button>
-                  </a>
-                  {% elif user.id in id_invitation_received %}
-                  <form action="/amis/" method="post">
-                    {% csrf_token %}
-                    <button type="submit" value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
-                      <i class="fas fa-check" aria-hidden="true"></i>
-                    </button>
-                    <button type="submit" value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
-                      <i class="fas fa-ban" aria-hidden="true"></i>
-                    </button>
-                  </form>
-                  {% elif user.id in id_amis %}
-                    <button type="submit" value="{{ user.id }}" name="are-friend" class="button is-rounded is-inverted is-primary">
-                      <i class="fas fa-user-check" aria-hidden="true"></i>
-                    </button>
-                  {% elif user.id not in id_amis %}
-                  <a aria-label="add-friend">
-                    <button type="submit" value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
-                      <i class="fas fa-user-plus" aria-hidden="true"></i>
-                    </button>
-                  </a>
-                  {% endif %}
-                </div>
+        {% if user.id != current_user.id %}
+          <div class="box friend-box">
+            <article class="media">
+              <div class="media-left">
+              {% if social %}
+                  {{ social }}
+                <figure class="image is-64x64">
+                  <img src="{{ social.avatar }}" alt="Avatar">
+                </figure>
+              {% endif %}
               </div>
-          </article>
-        </div>
+              <div class="media-content">
+                <div class="content" id="ami">
+                  <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                  <small>{{ user.username }}</small>
+                    {% if user.id in id_invitation_sent %}
+                    <a aria-label="pending-friend">
+                      <button type="submit" value="{{ user.id }}" name="are-friend" class="button is-rounded is-inverted is-info">
+                        <i class="fas fa-user-clock" aria-hidden="true"></i>
+                      </button>
+                    </a>
+                    {% elif user.id in id_invitation_received %}
+                    <form action="/amis/" method="post">
+                      {% csrf_token %}
+                      <button type="submit" value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                      </button>
+                      <button type="submit" value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
+                        <i class="fas fa-ban" aria-hidden="true"></i>
+                      </button>
+                    </form>
+                    {% elif user.id in id_amis %}
+                      <button type="submit" value="{{ user.id }}" name="are-friend" class="button is-rounded is-inverted is-primary">
+                        <i class="fas fa-user-check" aria-hidden="true"></i>
+                      </button>
+                    {% elif user.id not in id_amis %}
+                    <a aria-label="add-friend">
+                      <button type="submit" value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i>
+                      </button>
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+            </article>
+          </div>
+        {% endif %}
       {% endfor %}
     {% endblock %}
   </div>

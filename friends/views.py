@@ -13,14 +13,15 @@ def index(request):
     social_user = SocialUser.objects.all().order_by('-id')
     template = loader.get_template('friends.html')
 
-    # print(request.POST.get('accept_friend'))
+    # print(request.POST)
     if 'accept_friend' in request.POST:
         accepter_amitie(request)
     elif 'deny-friend' in request.POST:
         refuser_amitie(request)
     elif 'add-friend' in request.POST:
-        # accepter_amitie(request)
-        pass
+        ajouter_amitie(request)
+    elif 'remove-friend' in request.POST:
+        retirer_amitie(request)
 
     context = {
         'users': users,
@@ -75,11 +76,12 @@ def accepter_amitie(request):
     print(request.user.id)
     try:
         friend_request = FriendshipRequest.objects.get(from_user=ami_potentiel_id, to_user=request.user.id)
-        # friend_request = FriendshipRequest.objects.all()[0].__dict__
-        # print(friend_request)
         friend_request.accept()
     except FriendshipRequest.DoesNotExist as exception:
         print("La demande d'amitié est introuvable")
+        print(exception)
+    except FriendshipRequest.AlreadyFriendsError as exception:
+        print("Vous êtes déjà amis")
         print(exception)
 
 
@@ -91,4 +93,25 @@ def refuser_amitie(request):
         friend_request.reject()
     except FriendshipRequest.DoesNotExist as exception:
         print("La demande d'amitié est introuvable")
+        print(exception)
+
+
+@login_required
+def retirer_amitie(request):
+    personne_id = request.POST.get('remove-friend')
+    try:
+        Friend.objects.remove_friend(request.user, User.objects.get(id=personne_id))
+    except User.DoesNotExist as exception:
+        print("L'utilisateur est introuvable")
+        print(exception)
+
+
+@login_required
+def ajouter_amitie(request):
+    personne_id = request.POST.get('add-friend')
+    try:
+        Friend.objects.add_friend(request.user, User.objects.get(id=personne_id))
+        print('done')
+    except User.DoesNotExist as exception:
+        print("L'utilisateur est introuvable")
         print(exception)

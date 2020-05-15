@@ -22,31 +22,33 @@
                   <strong>{{ user.first_name }} {{ user.last_name }}</strong>
                   <small>{{ user.username }}</small>
                     {% if user.id in id_invitation_sent %}
-                    <a aria-label="pending-friend">
-                      <button type="submit" value="{{ user.id }}" name="are-friend" class="button is-rounded is-inverted is-info">
+                      <span class="icon has-text-info">
                         <i class="fas fa-user-clock" aria-hidden="true"></i>
-                      </button>
-                    </a>
+                      </span>
                     {% elif user.id in id_invitation_received %}
-                    <form action="/amis/" method="post">
-                      {% csrf_token %}
-                      <button type="submit" value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
-                        <i class="fas fa-check" aria-hidden="true"></i>
-                      </button>
-                      <button type="submit" value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
-                        <i class="fas fa-ban" aria-hidden="true"></i>
-                      </button>
-                    </form>
+                      <form action="/amis/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
+                          <i class="fas fa-check" aria-hidden="true"></i>
+                        </button>
+                        <button type="submit" value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
+                          <i class="fas fa-ban" aria-hidden="true"></i>
+                        </button>
+                      </form>
                     {% elif user.id in id_amis %}
-                      <button type="submit" value="{{ user.id }}" name="are-friend" class="button is-rounded is-inverted is-primary">
-                        <i class="fas fa-user-check" aria-hidden="true"></i>
-                      </button>
+                      <form action="/amis/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" value="{{ user.id }}" name="remove-friend" class="button is-rounded is-inverted is-primary">
+                          <i class="fas fa-user-check" id="un-ami"></i>
+                        </button>
+                      </form>
                     {% elif user.id not in id_amis %}
-                    <a aria-label="add-friend">
-                      <button type="submit" value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
-                        <i class="fas fa-user-plus" aria-hidden="true"></i>
-                      </button>
-                    </a>
+                      <form action="/amis/" method="post">
+                      {% csrf_token %}
+                        <button type="submit" value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
+                          <i class="fas fa-user-plus" aria-hidden="true"></i>
+                        </button>
+                      </form>
                     {% endif %}
                   </div>
                 </div>

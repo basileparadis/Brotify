@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from django.http import HttpResponse
 # from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -114,4 +115,7 @@ def ajouter_amitie(request):
         print('done')
     except User.DoesNotExist as exception:
         print("L'utilisateur est introuvable")
+        print(exception)
+    except IntegrityError as exception:
+        print("La demande a déjà été créée")
         print(exception)

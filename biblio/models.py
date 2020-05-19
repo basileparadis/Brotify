@@ -28,19 +28,41 @@ class Track(models.Model):
 class Biblio(metaclass=Singleton):
     user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
     user_songs = models.ForeignKey(Track, related_name='user_songs', on_delete=models.CASCADE)
-    savedTracks = {}
-    savedAlbums = {}
-    followedArtists = {}
+    # user_songs = models.ForeignKey('app_label.Track', on_delete=models.CASCADE)
+    liste_chansons = []
+    # savedAlbums = {}
+    # followedArtists = {}
 
-    def receive_info(self, sender, instance, created, **kwargs):
-        user = User.objects.get(username=self.request.user.get_username())
-        # social = user.social_auth.get(provider='spotify-oauth2')
-        response = requests.get(
-            'https://api.spotify.com/v1/me/tracks',
-            data={'access_token': self.get_token(user)}
-        )
-        friends = response.json()['items']
-        print("amis" + user)
+    def vider_biblio(self):
+        try:
+            # Biblio.__call__().objects.all().delete()
+            del self.liste_chansons[:]
+        except Exception as exception:
+            print(exception)
+
+    def get_chansons(self):
+        return self.liste_chansons
+
+    def ajouter_chansons(self, data):
+        for i in range(0, len(data['items'])):
+            les_chansons = data['items'][i]['track']
+            # Si la chanson n'a pas de pochette, on en attribue une générique
+            try:
+                cover = les_chansons['album']['images'][1]['url']
+            except IndexError:
+                cover = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Circle-icons-music.svg/' \
+                        '512px-Circle-icons-music.svg.png'
+            # La chanson
+            track = Track.objects.create(
+                id_track=les_chansons['id'],
+                title=les_chansons['name'],
+                artist=les_chansons['artists'][0]['name'],
+                album=les_chansons['album']['name'],
+                url_cover=cover,
+                url_track=les_chansons['external_urls']['spotify'],
+            )
+
+            Biblio.__call__().get_chansons().append(track)
 
 
 class Artist(models.Model):

@@ -8,6 +8,7 @@
       {% if tracks == 'Introuvable' %}
         <div>Profil introuvable, veuillez vous reconnecter à Spotify.</div>
       {% else %}
+          <div class="box">{{ tracks|length }} chansons</div>
         {% for track in tracks %}
         <div class="box">
             <article class="media">

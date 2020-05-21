@@ -10549,27 +10549,41 @@ label.panel-block:hover {
 }
 
 @font-face {
-  font-family: Gotham;
-  src: url("../GothamHTF-Bold.otf");
+  font-family: 'Gotham-Bold';
+  src: url("/static/GothamHTF-Bold.otf");
+}
+
+@font-face {
+  font-family: 'Gotham';
+  src: url("/static/GothamHTF-Bold.otf");
 }
 
 html {
-  font-family: Gotham;
   background-color: #191414;
-}
-
-html .navbar-brand {
-  display: flex;
-  align-items: center;
-}
-
-html .navbar-brand #logo {
-  margin: auto !important;
-  width: 90% !important;
 }
 
 html .navbar {
   background-color: #1DB954;
+}
+
+html .navbar .navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+html .navbar .navbar-brand #logo {
+  margin: auto !important;
+  max-width: 90%;
+  font-family: Gotham-Bold;
+}
+
+html .navbar .navbar-brand #navigation {
+  display: none;
+}
+
+html .navbar a.navbar-item {
+  font-family: Gotham-Bold;
+  display: inline-flex;
 }
 
 html .container {

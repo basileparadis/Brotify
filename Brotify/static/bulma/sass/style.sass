@@ -8,23 +8,34 @@
 
 // 4. Import your stuff here
 @font-face
-  font-family: Gotham;
-  src: url("../GothamHTF-Bold.otf");
+  font-family: 'Gotham-Bold';
+  src: url("/static/GothamHTF-Bold.otf")
+
+@font-face
+  font-family: 'Gotham';
+  src: url("/static/GothamHTF-Bold.otf")
 
 html
-    font-family: Gotham;
     background-color: #191414
-
-    .navbar-brand
-        display: flex
-        align-items: center
-
-        #logo
-            margin: auto !important
-            width: 90% !important
 
     .navbar
         background-color: #1DB954
+
+        .navbar-brand
+            display: flex
+            align-items: center
+
+            #logo
+                margin: auto !important
+                max-width: 90%
+                font-family: Gotham-Bold
+
+            #navigation
+                display: none
+
+        a.navbar-item
+            font-family: Gotham-Bold
+            display: inline-flex
 
     .container
         padding-top: 5pc

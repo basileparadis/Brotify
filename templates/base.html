@@ -4,31 +4,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Brotify{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/static/javascript.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link rel="stylesheet" href="/static/bulma/css/style.css">
+    <link href="/static/hamburger.css" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <div class="button is-rounded" id="logo">
-          <a class="navbar-item has-text-black" href="/">
-            <!-- <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x" data-fa-transform="rotate-180"></i></span> -->
-            <img src="../static/bro.webp" width="30" height="30">
-            <span><strong>Brotify</strong></span>
-          </a>
-            </div>
+            <a class="navbar-item has-text-black" href="/">
+              <!-- <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x" data-fa-transform="rotate-180"></i></span> -->
+              <img src="../static/bro.webp" width="30" height="30">
+              <span><strong>Brotify</strong></span>
+            </a>
+          </div>
           {% if user.is_authenticated %}
-          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
+            <nav id="navigation" class="navbar-dropdown is-right is-hidden-desktop">
+            <a class="navbar-item" href="/">Mon profil</a>
+            <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
+            <a class="navbar-item" href="/amis">Mes amis</a>
+          </nav>
+          <button class="hamburger hamburger--arrow is-hidden-desktop" type="button">
+            <span class="hamburger-box">
+              <span class="hamburger-inner"></span>
+            </span>
+          </button>
           {% endif %}
         </div>
-        <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-menu">
           {% if user.is_authenticated %}
           <div class="navbar-start">
             <a class="navbar-item" href="/">Mon profil</a>
@@ -37,7 +43,7 @@
           </div>
           {% endif %}
         </div>
-        <div class="navbar-end">
+        <div class="navbar-end is-hidden-touch">
           <div class="navbar-item">
             <div class="buttons">
               {% if user.is_authenticated %}

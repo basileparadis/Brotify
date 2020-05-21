@@ -5,28 +5,34 @@
 {% block content %}
   {% if user.is_authenticated %}
     <div class="box">
-      <p><strong>Bienvenue {{ user.username }}!</strong></p>
-      <p><small>Dernière connexion le {{ user.last_login }}</small></p>
+      {% if user.first_name %}
+        <p><strong>Bienvenue {{ user.first_name }}!</strong></p>
+      {% else %}
+        <p><strong>Bienvenue {{ user.username }}!</strong></p>
+      {% endif %}
+        <p><small>Dernière connexion le {{ user.last_login }}</small></p>
     </div>
-      <p><a href="{% url 'social:begin' 'spotify' %}" class="button is-link is-light"><span class="fas fa-sign-in-alt"></span>Se connecter à Spotify</a></p>
+      <form action="{% url 'social:begin' 'spotify' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="button is-link is-light">
+          <span class="icon is-small"><i class="fas fa-sign-in-alt"></i></span>
+          <span>Se connecter à Spotify</span>
+        </button>
+      </form>
       <form action="{% url 'social:disconnect' 'spotify' %}" method="POST">
         {% csrf_token %}
-        <button type="submit" class="button is-link is-light"><span class="fas fa-sign-in-alt"></span> Se déconnecter de Spotify</a></button>
+        <button type="submit" class="button is-link is-light">
+          <span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
+          <span>Se déconnecter de Spotify</span>
+        </button>
       </form>
-  {% if spotify_login %}
-    <p>Connected as <a href="https://spotify.com/{{ social.extra_data.id }}/" target="_blank">{{ spotify_login.extra_data.id }}</a></p>
-    {% if can_disconnect %}
-      <form method="post" action="{% url 'social:disconnect' 'spotify' %}">
+      <form action="{% url 'logout' %}" method="POST">
         {% csrf_token %}
-        <button type="submit">Disconnect from Spotify</button>
+        <button type="submit" class="button is-link is-light">
+          <span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
+          <span>Se déconnecter de Brotify</span>
+        </button>
       </form>
-    {% else %}
-      <button type="button" disabled>Disconnect from Spotify</button>
-      <p style="color: red">You must <a href="{% url 'password' %}">define a password</a> for your account before disconnecting from Facebook.</p>
-    {% endif %}
-  {% endif %}
-
-    <p><a href="{% url 'logout' %}" class="button is-link is-light"><span class="fas fa-sign-out-alt"></span>Se déconnecter de Brotify</a></p>
   {% else %}
     <p><strong>Bienvenue sur Brotify!</strong></p>
     <p>Vous n'êtes pas connecté</p>

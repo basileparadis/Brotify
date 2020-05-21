@@ -1,9 +1,11 @@
 # Create your views here.
 import requests
 import time
+
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from social_django.utils import load_strategy
-from biblio.models import Biblio, Track, Album, Artist
+from biblio.models import Biblio, Track, Album, Artist, ajouter_chansons, get_chansons
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AdminPasswordChangeForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
@@ -37,40 +39,40 @@ def refresh_access_token(request):
 
 @login_required
 def get_tracks(request):
+    les_biblio = Biblio.objects.filter(user=User.objects.get(username=request.user.username))
     try:
+        # Biblio.objects.all().delete()
+        # Track.objects.all().delete()
         response = requests.get('https://api.spotify.com/v1/me/tracks',
                                 params={'access_token': get_access_token(request),
                                         'limit': 50})
         data = response.json()
-        if data['total'] == len(Biblio.__call__().get_chansons()):
-            pass
-        else:
-            Biblio.__call__().vider_biblio()
-            Biblio.__call__().ajouter_chansons(data)
+        if data['total'] != len(les_biblio):
+            les_biblio.delete()
+            ajouter_chansons(data, request.user)
     except KeyError:
         response = requests.get('https://api.spotify.com/v1/me/tracks',
                                 params={'access_token': refresh_access_token(request),
                                         'limit': 50})
         data = response.json()
-        if data['total'] == len(Biblio.__call__().get_chansons()):
-            pass
-        else:
-            Biblio.__call__().vider_biblio()
-            Biblio.__call__().ajouter_chansons(data)
+        if data['total'] != len(les_biblio):
+            les_biblio.delete()
+            ajouter_chansons(data, request.user)
     except ObjectDoesNotExist:
         return 'Introuvable'
 
-    if data['total'] != len(Biblio.__call__().get_chansons()):
+    if data['total'] != len(les_biblio):
         total = data['total']
         while data['next'] and data['offset'] < total:
             # On met un délai pour éviter ConnectionResetError
             time.sleep(1)
             response = requests.get(data['next'], params={'access_token': get_access_token(request)})
             data = response.json()
-            Biblio.__call__().ajouter_chansons(data)
+            ajouter_chansons(data, request.user)
             print(data['offset'])
             print(str(round((int(data['offset']) / int(total) * 100), 2)) + '%')
-    return Biblio.__call__().get_chansons()
+    les_chansons = get_chansons(request.user)
+    return les_chansons
 
 
 '''

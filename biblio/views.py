@@ -65,7 +65,7 @@ def get_tracks(request):
         total = data['total']
         while data['next'] and data['offset'] < total:
             # On met un délai pour éviter ConnectionResetError
-            time.sleep(1)
+            time.sleep(0.5)
             response = requests.get(data['next'], params={'access_token': get_access_token(request)})
             data = response.json()
             ajouter_chansons(data, request.user)

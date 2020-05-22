@@ -19,8 +19,11 @@ class Track(models.Model):
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
     album = models.CharField(max_length=100)
-    url_cover = models.CharField(max_length=100)
+    url_cover_small = models.CharField(max_length=100)
+    url_cover_medium = models.CharField(max_length=100)
+    url_cover_large = models.CharField(max_length=100)
     url_track = models.CharField(max_length=100)
+    url_player = models.CharField(max_length=100, null=True)
     date_added = models.DateTimeField()
     # artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     # album = models.ForeignKey(Album, on_delete=models.CASCADE)
@@ -60,10 +63,12 @@ def ajouter_chansons(data, user):
         les_chansons = data['items'][i]['track']
         # Si la chanson n'a pas de pochette, on en attribue une générique
         try:
-            cover = les_chansons['album']['images'][1]['url']
+            cover_small = les_chansons['album']['images'][2]['url']
+            cover_medium = les_chansons['album']['images'][1]['url']
+            cover_large = les_chansons['album']['images'][0]['url']
         except IndexError:
-            cover = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Circle-icons-music.svg/' \
-                    '512px-Circle-icons-music.svg.png'
+            cover_small = cover_medium = cover_large = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80' \
+                                                       '/Circle-icons-music.svg/512px-Circle-icons-music.svg.png '
         # On ajoute la chanson si elle n'existe pas déjà dans la BD
         try:
             track = Track.objects.get(id_track=les_chansons['id'])
@@ -73,8 +78,11 @@ def ajouter_chansons(data, user):
                 title=les_chansons['name'],
                 artist=les_chansons['artists'][0]['name'],
                 album=les_chansons['album']['name'],
-                url_cover=cover,
+                url_cover_small=cover_small,
+                url_cover_medium=cover_medium,
+                url_cover_large=cover_large,
                 url_track=les_chansons['external_urls']['spotify'],
+                url_player=les_chansons['preview_url'],
                 date_added=data['items'][i]['added_at'],
             )
         try:

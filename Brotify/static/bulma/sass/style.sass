@@ -8,14 +8,27 @@
 
 // 4. Import your stuff here
 @font-face
+  font-family: 'Gotham-Light';
+  src: url("/static/GothamHTF-Light.otf")
+
+@font-face
   font-family: 'Gotham-Bold';
   src: url("/static/GothamHTF-Bold.otf")
 
-@font-face
-  font-family: 'Gotham';
-  src: url("/static/GothamHTF-Bold.otf")
+.qtip-default
+    background-color: black !important
 
-html
+    .qtip-titlebar
+        background-color: green !important
+        color: black
+
+    .qtip-content
+        color: white
+
+        video
+            height: 50px
+
+body
     background-color: #191414
 
     .navbar
@@ -28,13 +41,15 @@ html
             #logo
                 margin: auto !important
                 max-width: 90%
-                font-family: Gotham-Bold
+                a
+                    font-family: Gotham-Bold
 
             #navigation
                 display: none
 
         a.navbar-item
-            font-family: Gotham-Bold
+            font-family: Gotham-Light
+            font-weight: bold
             display: inline-flex
 
     .container
@@ -51,3 +66,4 @@ html
 
     .footer
         background-color: lightgray
+        padding: 1.5rem 1.5rem 1.5rem

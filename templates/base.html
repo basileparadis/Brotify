@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Brotify{% endblock %}</title>
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.js"></script>
     <script src="/static/javascript.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <link rel="stylesheet" href="/static/bulma/css/style.css">
     <link href="/static/hamburger.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link type="text/css" rel="stylesheet" href="http://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.css" />
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -27,7 +29,7 @@
             <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
             <a class="navbar-item" href="/amis">Mes amis</a>
           </nav>
-          <button class="hamburger hamburger--arrow is-hidden-desktop" type="button">
+          <button class="hamburger hamburger--minus is-hidden-desktop" type="button">
             <span class="hamburger-box">
               <span class="hamburger-inner"></span>
             </span>
@@ -58,7 +60,7 @@
         </div>
     </nav>
     <div class="container has-text-centered">
-      <div class="box column is-half is-offset-one-quarter">
+      <div class="box">
       {% block content %}
       {% endblock %}
       </div>

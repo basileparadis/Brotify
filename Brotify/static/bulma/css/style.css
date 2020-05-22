@@ -10549,44 +10549,65 @@ label.panel-block:hover {
 }
 
 @font-face {
+  font-family: 'Gotham-Light';
+  src: url("/static/GothamHTF-Light.otf");
+}
+
+@font-face {
   font-family: 'Gotham-Bold';
   src: url("/static/GothamHTF-Bold.otf");
 }
 
-@font-face {
-  font-family: 'Gotham';
-  src: url("/static/GothamHTF-Bold.otf");
+.qtip-default {
+  background-color: black !important;
 }
 
-html {
+.qtip-default .qtip-titlebar {
+  background-color: green !important;
+  color: black;
+}
+
+.qtip-default .qtip-content {
+  color: white;
+}
+
+.qtip-default .qtip-content video {
+  height: 50px;
+}
+
+body {
   background-color: #191414;
 }
 
-html .navbar {
+body .navbar {
   background-color: #1DB954;
 }
 
-html .navbar .navbar-brand {
+body .navbar .navbar-brand {
   display: flex;
   align-items: center;
 }
 
-html .navbar .navbar-brand #logo {
+body .navbar .navbar-brand #logo {
   margin: auto !important;
   max-width: 90%;
+}
+
+body .navbar .navbar-brand #logo a {
   font-family: Gotham-Bold;
 }
 
-html .navbar .navbar-brand #navigation {
+body .navbar .navbar-brand #navigation {
   display: none;
 }
 
-html .navbar a.navbar-item {
-  font-family: Gotham-Bold;
+body .navbar a.navbar-item {
+  font-family: Gotham-Light;
+  font-weight: bold;
   display: inline-flex;
 }
 
-html .container {
+body .container {
   padding-top: 5pc;
   padding-bottom: 5pc;
   display: flex;
@@ -10595,13 +10616,14 @@ html .container {
   min-height: 100vh;
 }
 
-html .container #ami {
+body .container #ami {
   display: flex;
   justify-content: space-around;
 }
 
-html .footer {
+body .footer {
   background-color: lightgray;
+  padding: 1.5rem 1.5rem 1.5rem;
 }
 
 /*# sourceMappingURL=style.css.map */

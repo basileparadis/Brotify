@@ -2,57 +2,21 @@
 
 {% block title %}Biblio{% endblock %}
 <div class="tile is-ancestor">
-  <div class="tile is-vertical is-8">
-    <div class="tile">
-        <div class="container has-text-centered">
-          <div>
-            {% block content %}
-              {% if tracks == 'Introuvable' %}
-                <div>Profil introuvable, veuillez vous reconnecter à Spotify.</div>
-              {% else %}
-                  <div class="box">{{ tracks|length }} chansons</div>
-                {% for track in tracks %}
-                <div class="box">
-                    <article class="media">
-                        <div class="media-left">
-                            <figure class="image is-128x128">
-                                <img src="{{ track.url_cover }}"/>
-                            </figure>
-                        </div>
-                        <div class="media-content">
-                            <div class="content">
-                                <p> <strong>{{ track.title }}</strong> <small>par</small> {{ track.artist }}
-                                <br> {{ track.album }}
-                                </p>
-                            </div>
-                            <nav class="level is-mobile">
-                                <div class="level-left">
-                                  <a class="level-item" aria-label="reply">
-                                    <span class="icon is-small">
-                                      <i class="fas fa-reply" aria-hidden="true"></i>
-                                    </span>
-                                    </a>
-                                    <a class="level-item" aria-label="play-song" href="{{ track.url_track }}">
-                                    <span class="icon is-small">
-                                      <i class="fas fa-play-circle" aria-hidden="true"></i>
-                                    </span>
-                                    </a>
-                                    <a class="level-item" aria-label="like">
-                                        <span class="icon is-small">
-                                            <i class="fas fa-heart" aria-hidden="true"></i>
-                                        </span>
-                                    </a>
-                                </div>
-                            </nav>
-                        </div>
-                    </article>
-                </div>
-                {% endfor %}
-              {% endif %}
-            {% endblock %}
-          </div>
-        </div>
-    </div>
-  </div>
+    {% block content %}
+        {% if tracks == 'Introuvable' %}
+            <div class="box">Profil introuvable, veuillez vous reconnecter à Spotify.</div>
+        {% else %}
+            <div class="box">{{ tracks|length }} chansons</div>
+            {% for track in tracks %}
+            <a href="{{ track.url_track }}">
+                <img class="tooltip"
+                     src="{{ track.url_cover_small }}"
+                     title="{{ track.title }}"
+                     alt="{{ track.artist }}"
+                     data-*="{{ track.url_player }}"
+                />
+            </a>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
 </div>
-

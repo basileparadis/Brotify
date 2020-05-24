@@ -3,6 +3,8 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
+<div class="container has-text-centered">
+  <div class="box">
   {% if user.is_authenticated %}
     <div class="box">
       {% if user.first_name %}
@@ -39,4 +41,6 @@
     <a href="{% url 'login' %}">Se connecter</a>
     <a href="{% url 'signup' %}">S'inscrire</a>
   {% endif %}
+  </div>
+</div>
 {% endblock %}

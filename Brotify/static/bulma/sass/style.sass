@@ -33,6 +33,9 @@ body
 
     .navbar
         background-color: #1DB954
+                position: -webkit-sticky
+        position: sticky
+        top: 0
 
         .navbar-brand
             display: flex
@@ -60,9 +63,24 @@ body
         justify-content: center
         min-height: 100vh
 
-        #ami
-            display: flex
-            justify-content: space-around
+        .is-64x64
+            height: 64px
+
+        .grid-container
+            display: grid
+            grid-template-columns: auto
+            background-color: #2196F3
+
+            .grid-item
+                background-color: rgba(255, 255, 255, 0.8)
+                border: 1px solid rgba(0, 0, 0, 0.8)
+                padding: 15px
+                text-align: center
+
+
+        .button.is-info
+            pointer-events: none
+            cursor: default
 
     .footer
         background-color: lightgray

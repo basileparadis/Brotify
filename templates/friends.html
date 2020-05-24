@@ -2,11 +2,79 @@
 
 {% block title %}Amis{% endblock %}
 
+{% block content %}
+<div class="container">
+  {% load friendshiptags %}
   <div class="box">
-    {% block content %}
-      {% load friendshiptags %}
+    <div class="grid-container">
       {% for user in users %}
         {% if user.id != current_user.id %}
+          <div class="card grid-item">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img class="is-rounded" src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-6">{{ user.username }}</p>
+                <p class="subtitle is-6">{{ user.first_name }} {{ user.last_name }}</p>
+              </div>
+              {% if user.id in id_invitation_sent %}
+                <button class="button is-rounded is-inverted is-info">
+                  <i class="fas fa-user-clock" aria-hidden="true"></i>
+                </button>
+              {% elif user.id in id_invitation_received %}
+                <form action="/amis/" method="post">
+                  {% csrf_token %}
+                  <button type="submit" value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
+                    <i class="fas fa-check" aria-hidden="true"></i>
+                  </button>
+                  <button type="submit" value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
+                    <i class="fas fa-ban" aria-hidden="true"></i>
+                  </button>
+                </form>
+              {% elif user.id in id_amis %}
+                <form action="/amis/" method="post">
+                  {% csrf_token %}
+                  <button type="submit" value="{{ user.id }}" name="compare" class="button is-rounded is-primary">
+                    <i class="fas fa-user-friends"></i>
+                  </button>
+                  <button type="submit" value="{{ user.id }}" name="remove-friend" class="button is-rounded is-inverted is-primary">
+                    <i class="fas fa-user-check" id="un-ami"></i>
+                  </button>
+                </form>
+              {% elif user.id not in id_amis %}
+                <form action="/amis/" method="post">
+                {% csrf_token %}
+                  <button type="submit" value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% if chansons_comparees != None %}
+    <div class="box has-text-centered">
+      {% for chanson in chansons_comparees %}
+        <a href="{{ chanson.url_track }}">
+          <img class="tooltip is-64x64"
+               src="{{ chanson.url_cover_small }}"
+               title="{{ chanson.title }}"
+               alt="{{ chanson.artist }}"
+               data-*="{{ chanson.url_player }}"
+          />
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+      <!--
           <div class="box friend-box">
             <article class="media">
               <div class="media-left">
@@ -54,7 +122,4 @@
                 </div>
             </article>
           </div>
-        {% endif %}
-      {% endfor %}
-    {% endblock %}
-  </div>
+          !-->

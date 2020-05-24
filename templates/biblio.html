@@ -1,22 +1,24 @@
 {% extends 'base.html' %}
 
 {% block title %}Biblio{% endblock %}
-<div class="tile is-ancestor">
-    {% block content %}
-        {% if tracks == 'Introuvable' %}
-            <div class="box">Profil introuvable, veuillez vous reconnecter à Spotify.</div>
-        {% else %}
-            <div class="box">{{ tracks|length }} chansons</div>
-            {% for track in tracks %}
-            <a href="{{ track.url_track }}">
-                <img class="tooltip"
-                     src="{{ track.url_cover_small }}"
-                     title="{{ track.title }}"
-                     alt="{{ track.artist }}"
-                     data-*="{{ track.url_player }}"
-                />
-            </a>
-            {% endfor %}
-        {% endif %}
-    {% endblock %}
+{% block content %}
+<div class="container has-text-centered">
+  <div class="box">
+    {% if tracks == 'Introuvable' %}
+        <div class="box">Profil introuvable, veuillez vous reconnecter à Spotify.</div>
+    {% else %}
+        <div class="box">{{ tracks|length }} chansons</div>
+        {% for track in tracks %}
+        <a href="{{ track.url_track }}">
+            <img class="tooltip is-64x64"
+                 src="{{ track.url_cover_small }}"
+                 title="{{ track.title }}"
+                 alt="{{ track.artist }}"
+                 data-*="{{ track.url_player }}"
+            />
+        </a>
+        {% endfor %}
+    {% endif %}
+  </div>
 </div>
+{% endblock %}

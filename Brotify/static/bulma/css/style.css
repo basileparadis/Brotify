@@ -10581,6 +10581,9 @@ body {
 
 body .navbar {
   background-color: #1DB954;
+  background-color-position: -webkit-sticky;
+  position: sticky;
+  top: 0;
 }
 
 body .navbar .navbar-brand {
@@ -10616,9 +10619,26 @@ body .container {
   min-height: 100vh;
 }
 
-body .container #ami {
-  display: flex;
-  justify-content: space-around;
+body .container .is-64x64 {
+  height: 64px;
+}
+
+body .container .grid-container {
+  display: grid;
+  grid-template-columns: auto;
+  background-color: #2196F3;
+}
+
+body .container .grid-container .grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  text-align: center;
+}
+
+body .container .button.is-info {
+  pointer-events: none;
+  cursor: default;
 }
 
 body .footer {

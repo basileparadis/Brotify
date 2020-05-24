@@ -58,6 +58,8 @@ def get_tracks(request):
         if data['total'] != len(les_biblio):
             les_biblio.delete()
             ajouter_chansons(data, request.user)
+    except ConnectionError:
+        return 'Problème de connexion'
     except ObjectDoesNotExist:
         return 'Introuvable'
 
@@ -65,7 +67,7 @@ def get_tracks(request):
         total = data['total']
         while data['next'] and data['offset'] < total:
             # On met un délai pour éviter ConnectionResetError
-            time.sleep(0.5)
+            time.sleep(0.01)
             response = requests.get(data['next'], params={'access_token': get_access_token(request)})
             data = response.json()
             ajouter_chansons(data, request.user)

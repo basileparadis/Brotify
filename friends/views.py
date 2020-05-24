@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import HttpResponse
 # from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.template import loader
 from friendship.models import Friend, FriendshipRequest
 from accounts.models import SocialUser
+from biblio.models import Biblio, Track
 
 
 @login_required
@@ -13,6 +15,7 @@ def index(request):
     users = User.objects.all()
     social_user = SocialUser.objects.all().order_by('-id')
     template = loader.get_template('friends.html')
+    liste_chansons_comparees = None
 
     # print(request.POST)
     if 'accept_friend' in request.POST:
@@ -23,6 +26,8 @@ def index(request):
         ajouter_amitie(request)
     elif 'remove-friend' in request.POST:
         retirer_amitie(request)
+    elif 'compare' in request.POST:
+        liste_chansons_comparees = compare(request)
 
     context = {
         'users': users,
@@ -31,6 +36,7 @@ def index(request):
         'id_amis': get_friends(request),
         'id_invitation_sent': get_sent_friend_request(request),
         'id_invitation_received': get_received_friend_request(request),
+        'chansons_comparees': liste_chansons_comparees,
     }
     return HttpResponse(template.render(context, request))
 
@@ -119,3 +125,27 @@ def ajouter_amitie(request):
     except IntegrityError as exception:
         print("La demande a déjà été créée")
         print(exception)
+
+
+@login_required
+def compare(request):
+    # Définir les usagers
+    usager = request.user
+    ami = User.objects.get(id=request.POST.get('compare'))
+    # Obtenir une liste des id des chansons d'un utilisateur (biblio)
+    liste_biblio_usager = Biblio.objects.filter(user=usager).values_list('user_song_id', flat=True)
+    liste_biblio_ami = Biblio.objects.filter(user=ami).values_list('user_song_id', flat=True)
+    # Obtenir les chansons dont le id est présent dans les deux biblios
+    tracks = Track.objects.filter(Q(id__in=liste_biblio_usager), Q(id__in=liste_biblio_ami))
+    print(tracks.values_list('title', flat=True))
+    '''
+    liste_commun = Biblio.objects.filter(
+        Q(user_song_id__in=my_tracks),
+        Q(user_song_id__in=friend_tracks)
+    )
+    # liste_commun = Biblio.objects.filter(user_id=request.user.id)
+    print('COMMUN')
+    for biblio in liste_commun:
+        print(Track.objects.get(id=biblio.user_song_id).title)
+    '''
+    return tracks

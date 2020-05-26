@@ -1,4 +1,4 @@
-#!/Users/basileparadis/Documents/Brotify/venv/bin/python3.8
+#!/Users/basileparadis/Documents/Brotify/venv/bin/python
 from django.core import management
 
 if __name__ == "__main__":

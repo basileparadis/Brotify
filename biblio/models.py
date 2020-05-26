@@ -1,17 +1,11 @@
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-# Create your models here.
 from django.contrib.auth.models import User
+from biblio.views import get_access_token, refresh_access_token
 import requests
 import time
-
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+# import grequests
 
 
 class Track(models.Model):
@@ -32,33 +26,87 @@ class Track(models.Model):
 class Biblio(models.Model):
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
     user_song = models.ForeignKey(Track, related_name='user_song', on_delete=models.CASCADE, null=True)
-    # user_songs = models.ForeignKey('app_label.Track', on_delete=models.CASCADE)
-    # liste_chansons = []
-    # savedAlbums = {}
-    # followedArtists = {}
-
-    def vider_biblio(self):
-        try:
-            # Biblio.__call__().objects.all().delete()
-            # del self.liste_chansons[:]
-            Biblio.objects.all().delete()
-            Track.objects.all().delete()
-        except Exception as exception:
-            print(exception)
 
 
-def get_chansons(user):
-    # return self.liste_chansons
-    # return Biblio.objects.filter(user=user).user_song_id
-    # return Track.objects.filter(id__in=Biblio.objects.filter(user=user).values_list('user_song_id', flat=True))
+class Artist(models.Model):
+    id_artist = models.CharField(max_length=25, default='')
+    name = models.CharField(max_length=100, default='')
+
+
+class Album(models.Model):
+    id_album = models.CharField(max_length=25, default='')
+    name = models.CharField(max_length=100, default='')
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+
+
+# Récupérer les chansons d'un utilisateur via l'API
+@login_required
+def get_chanson_api(request):
+    les_biblio = Biblio.objects.filter(user=request.user)
+    try:
+        # vider_biblio()
+        response = requests.get('https://api.spotify.com/v1/me/tracks',
+                                params={'access_token': get_access_token(request),
+                                        'limit': 50})
+        data = response.json()
+        if data['total'] != les_biblio.count():
+            les_biblio.delete()
+            ajouter_chansons_bd(data, request.user)
+    except KeyError:
+        response = requests.get('https://api.spotify.com/v1/me/tracks',
+                                params={'access_token': refresh_access_token(request),
+                                        'limit': 50})
+        data = response.json()
+        if data['total'] != les_biblio.count():
+            les_biblio.delete()
+            ajouter_chansons_bd(data, request.user)
+    except ConnectionError:
+        return 'Problème de connexion'
+    except ObjectDoesNotExist:
+        return 'Introuvable'
+
+    if data['total'] != len(les_biblio):
+        urls = []
+        total = data['total']
+        while data['next'] and data['offset'] < total:
+            # On met un délai pour éviter ConnectionResetError
+            time.sleep(0.01)
+            response = requests.get(data['next'], params={'access_token': get_access_token(request)})
+            data = response.json()
+            ajouter_chansons_bd(data, request.user)
+            print(data['next'])
+            print(data['offset'])
+            print(str(round((int(data['offset']) / int(total) * 100), 2)) + '%')
+
+            urls.append()
+    les_chansons = get_chansons_bd(request.user)
+    return les_chansons
+
+
+# Fonction temporaire pour le développement
+def vider_biblio():
+    try:
+        Biblio.objects.all().delete()
+        Track.objects.all().delete()
+    except Exception as exception:
+        print(exception)
+
+
+# Obtenir l'inventaire des chansons pour un certain utilisateur
+@login_required
+def get_chansons_bd(request):
     les_chansons = []
-    tracks = Track.objects.filter(id__in=Biblio.objects.filter(user=user).values_list('user_song_id', flat=True)).order_by('-date_added')
+    tracks = Track.objects.filter(
+        id__in=Biblio.objects.filter(user=request.user).values_list('user_song_id', flat=True)
+    ).order_by('-date_added')
     for track in tracks:
         les_chansons.append(track)
     return les_chansons
 
 
-def ajouter_chansons(data, user):
+# Traiter les données de l'API et les ajouter à la BD
+@login_required
+def ajouter_chansons_bd(data, user):
     for i in range(0, len(data['items'])):
         les_chansons = data['items'][i]['track']
         # Si la chanson n'a pas de pochette, on en attribue une générique
@@ -89,20 +137,3 @@ def ajouter_chansons(data, user):
             Biblio.objects.create(user=user, user_song=track)
         except Exception as exception:
             print(exception)
-
-            # self.get_chansons().append(track)
-            # Biblio.objects.add(track)
-            # Biblio.__call__().get_chansons().append(track)
-
-
-class Artist(models.Model):
-    id_artist = models.CharField(max_length=25, default='')
-    name = models.CharField(max_length=100, default='')
-    # image = models.ImageField(upload_to='profile_image', blank=True)
-
-
-class Album(models.Model):
-    id_album = models.CharField(max_length=25, default='')
-    name = models.CharField(max_length=100, default='')
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
-    # image = models.ImageField(upload_to='profile_image', blank=True)

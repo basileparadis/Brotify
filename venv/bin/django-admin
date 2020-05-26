@@ -1,4 +1,4 @@
-#!/Users/basileparadis/Documents/Brotify/venv/bin/python3.8
+#!/Users/basileparadis/Documents/Brotify/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

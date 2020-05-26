@@ -1,18 +1,13 @@
 # Create your views here.
-import requests
-import time
-
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from social_django.utils import load_strategy
-from biblio.models import Biblio, Track, Album, Artist, ajouter_chansons, get_chansons
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+import biblio.models as biblio
 
 
 @login_required
 def index(request):
-    tracks = get_tracks(request)
+    tracks = biblio.get_chansons_bd(request)
     return render(request, 'biblio.html', {'tracks': tracks})
 
 
@@ -32,46 +27,6 @@ def refresh_access_token(request):
     social.refresh_token(strategy)
     access_token = social.extra_data['access_token']
     return access_token
-
-
-@login_required
-def get_tracks(request):
-    les_biblio = Biblio.objects.filter(user=request.user)
-    try:
-        # Biblio.objects.all().delete()
-        # Track.objects.all().delete()
-        response = requests.get('https://api.spotify.com/v1/me/tracks',
-                                params={'access_token': get_access_token(request),
-                                        'limit': 50})
-        data = response.json()
-        if data['total'] != les_biblio.count():
-            les_biblio.delete()
-            ajouter_chansons(data, request.user)
-    except KeyError:
-        response = requests.get('https://api.spotify.com/v1/me/tracks',
-                                params={'access_token': refresh_access_token(request),
-                                        'limit': 50})
-        data = response.json()
-        if data['total'] != les_biblio.count():
-            les_biblio.delete()
-            ajouter_chansons(data, request.user)
-    except ConnectionError:
-        return 'Problème de connexion'
-    except ObjectDoesNotExist:
-        return 'Introuvable'
-
-    if data['total'] != len(les_biblio):
-        total = data['total']
-        while data['next'] and data['offset'] < total:
-            # On met un délai pour éviter ConnectionResetError
-            time.sleep(0.01)
-            response = requests.get(data['next'], params={'access_token': get_access_token(request)})
-            data = response.json()
-            ajouter_chansons(data, request.user)
-            print(data['offset'])
-            print(str(round((int(data['offset']) / int(total) * 100), 2)) + '%')
-    les_chansons = get_chansons(request.user)
-    return les_chansons
 
 
 '''

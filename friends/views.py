@@ -137,7 +137,6 @@ def compare(request):
     liste_biblio_ami = Biblio.objects.filter(user=ami).values_list('user_song_id', flat=True)
     # Obtenir les chansons dont le id est présent dans les deux biblios
     tracks = Track.objects.filter(Q(id__in=liste_biblio_usager), Q(id__in=liste_biblio_ami))
-    print(tracks.values_list('title', flat=True))
     '''
     liste_commun = Biblio.objects.filter(
         Q(user_song_id__in=my_tracks),

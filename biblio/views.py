@@ -7,10 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from social_django.utils import load_strategy
 from biblio.models import Biblio, Track, Album, Artist, ajouter_chansons, get_chansons
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AdminPasswordChangeForm, PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
-from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 
 @login_required
@@ -39,7 +36,7 @@ def refresh_access_token(request):
 
 @login_required
 def get_tracks(request):
-    les_biblio = Biblio.objects.filter(user=User.objects.get(username=request.user.username))
+    les_biblio = Biblio.objects.filter(user=request.user)
     try:
         # Biblio.objects.all().delete()
         # Track.objects.all().delete()
@@ -47,7 +44,7 @@ def get_tracks(request):
                                 params={'access_token': get_access_token(request),
                                         'limit': 50})
         data = response.json()
-        if data['total'] != len(les_biblio):
+        if data['total'] != les_biblio.count():
             les_biblio.delete()
             ajouter_chansons(data, request.user)
     except KeyError:
@@ -55,7 +52,7 @@ def get_tracks(request):
                                 params={'access_token': refresh_access_token(request),
                                         'limit': 50})
         data = response.json()
-        if data['total'] != len(les_biblio):
+        if data['total'] != les_biblio.count():
             les_biblio.delete()
             ajouter_chansons(data, request.user)
     except ConnectionError:

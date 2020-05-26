@@ -134,8 +134,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(ROOT_PATH, 'static')]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/profile_pic/'
+MEDIA_ROOT = os.path.join(ROOT_PATH, 'static')
 
 # Specify where to redirect the user upon a successful login/logout
 LOGIN_URL = 'login'

@@ -8,6 +8,8 @@
     <script type="text/javascript" src="http://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.js"></script>
     <script src="/static/javascript.js"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    {% load static %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
     <link rel="stylesheet" href="/static/bulma/css/style.css">
     <link href="/static/hamburger.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
@@ -23,23 +25,26 @@
               <span><strong>Brotify</strong></span>
             </a>
           </div>
-          {% if user.is_authenticated %}
             <nav id="navigation" class="navbar-dropdown is-right is-hidden-desktop">
-            <a class="navbar-item" href="/">Mon profil</a>
+          {% if user.is_authenticated %}
+            <a class="navbar-item" href="/profile">Mon profil</a>
             <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
             <a class="navbar-item" href="/amis">Mes amis</a>
+          {% else %}
+            <a class="navbar-item" href="{% url 'signup' %}"><span>S'inscrire</span></a>
+            <a class="navbar-item" href="{% url 'login' %}"><strong>Se connecter</strong></a>
+          {% endif %}
           </nav>
           <button class="hamburger hamburger--minus is-hidden-desktop" type="button">
             <span class="hamburger-box">
               <span class="hamburger-inner"></span>
             </span>
           </button>
-          {% endif %}
         </div>
         <div class="navbar-menu">
           {% if user.is_authenticated %}
           <div class="navbar-start">
-            <a class="navbar-item" href="/">Mon profil</a>
+            <a class="navbar-item" href="/profile">Mon profil</a>
             <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
             <a class="navbar-item" href="/amis">Mes amis</a>
           </div>

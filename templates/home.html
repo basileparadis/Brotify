@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Accueil{% endblock %}
-
 {% block content %}
 <div class="container has-text-centered">
   <div class="box">
+    {{ user.social }}
   {% if user.is_authenticated %}
     <div class="box">
       {% if user.first_name %}

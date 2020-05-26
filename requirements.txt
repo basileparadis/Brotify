@@ -6,6 +6,10 @@ cryptography==2.8
 defusedxml==0.6.0
 Django==3.0.4
 django-bulma==0.6.0
+django-friendship==1.8.2
+gevent==20.5.1
+greenlet==0.4.15
+grequests==0.6.0
 idna==2.9
 oauthlib==3.1.0
 Pillow==7.0.0
@@ -21,3 +25,5 @@ social-auth-core==3.3.0
 sqlparse==0.3.1
 Unidecode==1.1.1
 urllib3==1.25.8
+zope.event==4.4
+zope.interface==5.1.0

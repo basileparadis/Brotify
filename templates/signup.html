@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% load bulma_tags %}
 
-{% block title %}S'inscrire sur Brotify{% endblock %}
-
 {% block content %}
-  <h2>Créer votre compte</h2>
-  <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form|bulma }}
-    <button type="submit" class="button is-primary">Créer mon compte</button>
-  </form>
+<div class="container column is-half is-offset-one-quarter">
+  <div class="box">
+      <h2>Créer votre compte</h2>
+      <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form|bulma }}
+        <button type="submit" class="button is-primary">Créer mon compte</button>
+      </form>
+  </div>
+</div>
 {% endblock %}

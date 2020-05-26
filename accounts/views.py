@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
@@ -13,3 +14,8 @@ class SignUp(CreateView):
     # So we have to use the lazy form of reverse to load them later when they're available
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
+
+
+@login_required
+def index(request):
+    return render(request, 'profile.html')

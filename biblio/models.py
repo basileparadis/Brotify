@@ -52,7 +52,7 @@ def get_chansons(user):
     # return Biblio.objects.filter(user=user).user_song_id
     # return Track.objects.filter(id__in=Biblio.objects.filter(user=user).values_list('user_song_id', flat=True))
     les_chansons = []
-    tracks = Track.objects.filter(id__in=Biblio.objects.filter(user=user).values_list('user_song_id', flat=True))
+    tracks = Track.objects.filter(id__in=Biblio.objects.filter(user=user).values_list('user_song_id', flat=True)).order_by('-date_added')
     for track in tracks:
         les_chansons.append(track)
     return les_chansons

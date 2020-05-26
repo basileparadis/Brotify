@@ -19,8 +19,5 @@ class UserProfile(models.Model):
 
 class SocialUser(models.Model):
     user = models.OneToOneField(User, related_name='user_info', on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='media', null=True, blank=True, verbose_name='Mon avatar')
+    avatar = models.ImageField(upload_to='profile_pic', null=True, blank=True, verbose_name='Mon avatar')
     description = models.TextField(max_length=2000, default='', null=True, blank=True)
-
-    def __str__(self):
-        return self.avatar.url

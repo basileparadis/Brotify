@@ -1,31 +1,39 @@
+import logging
+from gevent import monkey
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models, IntegrityError
 from biblio.views import get_access_token, refresh_access_token
+
+
+def stub(*args, **kwargs):  # pylint: disable=unused-argument
+    pass
+
+
+monkey.patch_all = stub
+import grequests
 import requests
-import time
-# import grequests
 
 
 class Track(models.Model):
-    id_track = models.CharField(max_length=24)
+    id_track = models.CharField(max_length=24, null=False, unique=True)
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
     album = models.CharField(max_length=100)
-    url_cover_small = models.CharField(max_length=100)
-    url_cover_medium = models.CharField(max_length=100)
-    url_cover_large = models.CharField(max_length=100)
-    url_track = models.CharField(max_length=100)
-    url_player = models.CharField(max_length=100, null=True)
-    date_added = models.DateTimeField()
+    url_cover_small = models.SlugField(max_length=100)
+    url_cover_medium = models.SlugField(max_length=100)
+    url_cover_large = models.SlugField(max_length=100)
+    url_track = models.SlugField(max_length=100)
+    url_player = models.SlugField(max_length=100, null=True)
     # artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     # album = models.ForeignKey(Album, on_delete=models.CASCADE)
 
 
-class Biblio(models.Model):
-    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    user_song = models.ForeignKey(Track, related_name='user_song', on_delete=models.CASCADE, null=True)
+class LikedTrack(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_song = models.ForeignKey(Track, on_delete=models.CASCADE, null=False)
+    date_added = models.DateTimeField()
 
 
 class Artist(models.Model):
@@ -41,99 +49,82 @@ class Album(models.Model):
 
 # Récupérer les chansons d'un utilisateur via l'API
 @login_required
-def get_chanson_api(request):
-    les_biblio = Biblio.objects.filter(user=request.user)
+def get_tracks_from_api(request):
+    liked_tracks = LikedTrack.objects.filter(user=request.user)
     try:
-        # vider_biblio()
         response = requests.get('https://api.spotify.com/v1/me/tracks',
                                 params={'access_token': get_access_token(request),
                                         'limit': 50})
         data = response.json()
-        if data['total'] != les_biblio.count():
-            les_biblio.delete()
-            ajouter_chansons_bd(data, request.user)
+        total = data['total']
     except KeyError:
         response = requests.get('https://api.spotify.com/v1/me/tracks',
                                 params={'access_token': refresh_access_token(request),
                                         'limit': 50})
         data = response.json()
-        if data['total'] != les_biblio.count():
-            les_biblio.delete()
-            ajouter_chansons_bd(data, request.user)
+        total = data['total']
     except ConnectionError:
         return 'Problème de connexion'
     except ObjectDoesNotExist:
         return 'Introuvable'
-
-    if data['total'] != len(les_biblio):
+    if total != liked_tracks.count():
+        liked_tracks.delete()
+        offset = 0
         urls = []
-        total = data['total']
-        while data['next'] and data['offset'] < total:
-            # On met un délai pour éviter ConnectionResetError
-            time.sleep(0.01)
-            response = requests.get(data['next'], params={'access_token': get_access_token(request)})
-            data = response.json()
-            ajouter_chansons_bd(data, request.user)
-            print(data['next'])
-            print(data['offset'])
-            print(str(round((int(data['offset']) / int(total) * 100), 2)) + '%')
+        while offset < total:
+            urls.append('https://api.spotify.com/v1/me/tracks?offset=' + str(offset) + '&limit=50')
+            offset += 50
+        params = {'access_token': get_access_token(request)}
+        rs = (grequests.get(u, params=params) for u in urls)
+        results = grequests.imap(rs)
+        track_object_list = []
+        liked_object_list = []
+        for result in results:
+            result = result.json()
+            for i in range(0, len(result['items'])):
+                track = Track(
+                    id_track=result['items'][i]['track']['id'],
+                    title=result['items'][i]['track']['name'],
+                    artist=result['items'][i]['track']['artists'][0]['name'],
+                    album=result['items'][i]['track']['album']['name'],
+                    url_cover_small=get_album_covers(result['items'][i]['track']['album']['images'])[0],
+                    url_cover_medium=get_album_covers(result['items'][i]['track']['album']['images'])[1],
+                    url_cover_large=get_album_covers(result['items'][i]['track']['album']['images'])[2],
+                    url_track=result['items'][i]['track']['external_urls']['spotify'],
+                    url_player=result['items'][i]['track']['preview_url'],
+                )
+                track_object_list.append(track)
+        print(len(track_object_list))
+        Track.objects.bulk_create(track_object_list, ignore_conflicts=True)
+        for track in track_object_list:
+            liked_track = LikedTrack(
+                user=request.user,
+                user_song=Track.objects.get(id_track=track.id_track),
+                date_added=result['items'][i]['added_at'],
+            )
+            liked_object_list.append(liked_track)
+        LikedTrack.objects.bulk_create(liked_object_list)
+    track_list = get_liked_tracks_from_bd(request)
+    return track_list
 
-            urls.append()
-    les_chansons = get_chansons_bd(request.user)
-    return les_chansons
 
-
-# Fonction temporaire pour le développement
-def vider_biblio():
+def get_album_covers(images):
     try:
-        Biblio.objects.all().delete()
-        Track.objects.all().delete()
-    except Exception as exception:
-        print(exception)
+        cover_small = images[2]['url']
+        cover_medium = images[1]['url']
+        cover_large = images[0]['url']
+    except IndexError:
+        cover_small = cover_medium = cover_large = 'https://upload.wikimedia.org/wikipedia/commons/thumb' \
+                                                   '/8/80/Circle-icons-music.svg/512px-Circle-icons-music' \
+                                                   '.svg.png '
+    return [cover_small, cover_medium, cover_large]
 
 
 # Obtenir l'inventaire des chansons pour un certain utilisateur
 @login_required
-def get_chansons_bd(request):
-    les_chansons = []
+def get_liked_tracks_from_bd(request):
     tracks = Track.objects.filter(
-        id__in=Biblio.objects.filter(user=request.user).values_list('user_song_id', flat=True)
-    ).order_by('-date_added')
-    for track in tracks:
-        les_chansons.append(track)
-    return les_chansons
-
-
-# Traiter les données de l'API et les ajouter à la BD
-@login_required
-def ajouter_chansons_bd(data, user):
-    for i in range(0, len(data['items'])):
-        les_chansons = data['items'][i]['track']
-        # Si la chanson n'a pas de pochette, on en attribue une générique
-        try:
-            cover_small = les_chansons['album']['images'][2]['url']
-            cover_medium = les_chansons['album']['images'][1]['url']
-            cover_large = les_chansons['album']['images'][0]['url']
-        except IndexError:
-            cover_small = cover_medium = cover_large = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80' \
-                                                       '/Circle-icons-music.svg/512px-Circle-icons-music.svg.png '
-        # On ajoute la chanson si elle n'existe pas déjà dans la BD
-        try:
-            track = Track.objects.get(id_track=les_chansons['id'])
-        except Track.DoesNotExist:
-            track = Track.objects.create(
-                id_track=les_chansons['id'],
-                title=les_chansons['name'],
-                artist=les_chansons['artists'][0]['name'],
-                album=les_chansons['album']['name'],
-                url_cover_small=cover_small,
-                url_cover_medium=cover_medium,
-                url_cover_large=cover_large,
-                url_track=les_chansons['external_urls']['spotify'],
-                url_player=les_chansons['preview_url'],
-                date_added=data['items'][i]['added_at'],
-            )
-        try:
-            Biblio.objects.create(user=user, user_song=track)
-        except Exception as exception:
-            print(exception)
+        id__in=LikedTrack.objects.filter(user=request.user).values_list('user_song_id', flat=True)
+        # .order_by('date_added')
+    )
+    return tracks

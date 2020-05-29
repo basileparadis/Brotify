@@ -58,16 +58,20 @@
   </div>
   {% if chansons_comparees != None %}
     <div class="box has-text-centered">
-      {% for chanson in chansons_comparees %}
-        <a href="{{ chanson.url_track }}">
-          <img class="tooltip is-64x64"
-               src="{{ chanson.url_cover_small }}"
-               title="{{ chanson.title }}"
-               alt="{{ chanson.artist }}"
-               data-*="{{ chanson.url_player }}"
-          />
-        </a>
-      {% endfor %}
+      {% if chansons_comparees|length == 0 %}
+        Cet utilisateur n'a pas encore synchronisé son compte Spotify avec Brotify
+      {% else %}
+        {% for chanson in chansons_comparees %}
+          <a href="{{ chanson.url_track }}">
+            <img class="tooltip is-64x64"
+                 src="{{ chanson.url_cover_small }}"
+                 title="{{ chanson.title }}"
+                 alt="{{ chanson.artist }}"
+                 data-*="{{ chanson.url_player }}"
+            />
+          </a>
+        {% endfor %}
+      {% endif %}
     </div>
   {% endif %}
 </div>

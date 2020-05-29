@@ -7,7 +7,7 @@ import biblio.models as biblio
 
 @login_required
 def index(request):
-    tracks = biblio.get_chansons_bd(request)
+    tracks = biblio.get_tracks_from_api(request)
     return render(request, 'biblio.html', {'tracks': tracks})
 
 

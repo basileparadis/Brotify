@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from friendship.models import Friend, FriendshipRequest
 from django.db import IntegrityError
-from biblio.models import Biblio, Track
+from biblio.models import LikedTrack, Track
 
 
 @login_required
@@ -105,8 +105,8 @@ def compare(request):
     usager = request.user
     ami = User.objects.get(id=request.POST.get('compare'))
     # Obtenir une liste des id des chansons d'un utilisateur (biblio)
-    liste_biblio_usager = Biblio.objects.filter(user=usager).values_list('user_song_id', flat=True)
-    liste_biblio_ami = Biblio.objects.filter(user=ami).values_list('user_song_id', flat=True)
+    liste_biblio_usager = LikedTrack.objects.filter(user=usager).values_list('user_song_id', flat=True)
+    liste_biblio_ami = LikedTrack.objects.filter(user=ami).values_list('user_song_id', flat=True)
     # Obtenir les chansons dont le id est présent dans les deux biblios
     tracks = Track.objects.filter(Q(id__in=liste_biblio_usager), Q(id__in=liste_biblio_ami))
     return tracks

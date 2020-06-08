@@ -1,9 +1,13 @@
+import json
+import random
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import JsonResponse
 from friendship.models import Friend, FriendshipRequest
 from django.db import IntegrityError
-from biblio.models import LikedTrack, Track
+from biblio.models import LikedTrack, Track, LikedArtist, Artist
 
 
 @login_required
@@ -86,7 +90,7 @@ def retirer_amitie(request):
 
 # Envoyer une demande d'amitié
 @login_required
-def ajouter_amitie(request):
+def add_friendship(request):
     personne_id = request.POST.get('add-friend')
     try:
         Friend.objects.add_friend(request.user, User.objects.get(id=personne_id))
@@ -100,13 +104,59 @@ def ajouter_amitie(request):
 
 # Lister les morceaux communs aux deux utilisateurs
 @login_required
-def compare(request):
+def compare_songs(request):
     # Définir les usagers
     usager = request.user
     ami = User.objects.get(id=request.POST.get('compare'))
     # Obtenir une liste des id des chansons d'un utilisateur (biblio)
-    liste_biblio_usager = LikedTrack.objects.filter(user=usager).values_list('user_song_id', flat=True)
-    liste_biblio_ami = LikedTrack.objects.filter(user=ami).values_list('user_song_id', flat=True)
+    user_liked_tracks = LikedTrack.objects.filter(user=usager).values_list('user_song', flat=True)
+    friend_liked_tracks = LikedTrack.objects.filter(user=ami).values_list('user_song', flat=True)
     # Obtenir les chansons dont le id est présent dans les deux biblios
-    tracks = Track.objects.filter(Q(id__in=liste_biblio_usager), Q(id__in=liste_biblio_ami))
+    tracks = Track.objects.filter(Q(id__in=user_liked_tracks), Q(id__in=friend_liked_tracks))
     return tracks
+
+
+# Lister les artistes communs aux deux utilisateurs
+@login_required
+def compare_artists(request):
+    usager = request.user
+    ami = User.objects.get(id=request.POST.get('compare'))
+
+    user_liked_artists = LikedArtist.objects.filter(user=usager).values_list('liked_artist', flat=True)
+    friend_liked_artists = LikedArtist.objects.filter(user=ami).values_list('liked_artist', flat=True)
+
+    commonly_liked_artists = LikedArtist.objects.filter(
+        Q(liked_artist__in=user_liked_artists),
+        Q(liked_artist__in=friend_liked_artists)
+    ).values_list('liked_artist', flat=True).distinct()
+
+    labels = []
+    data = []
+    for artist in commonly_liked_artists:
+        artist_object = Artist.objects.get(id=artist)
+        liked_tracks_you = LikedArtist.objects.filter(Q(liked_artist=artist),
+                                                      Q(user=usager)
+                                                      ).values_list('related_track', flat=True)
+        liked_tracks_friend = LikedArtist.objects.filter(Q(liked_artist=artist),
+                                                         Q(user=ami)
+                                                         ).values_list('related_track', flat=True)
+        commonly_liked_artists_tracks = LikedTrack.objects.filter(Q(user_song__in=liked_tracks_you),
+                                                                  Q(user_song__in=liked_tracks_friend)
+                                                                  ).values_list('user_song',
+                                                                                flat=True).distinct().count()
+        if commonly_liked_artists_tracks > 0:
+            labels.append(artist_object.name)
+            data.append(
+                {
+                    'label': [artist_object.name],
+                    'backgroundColor': "#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]),
+                    'borderColor': "rgba(0,0,0,1)",
+                    'data': [{'x': liked_tracks_you.count(),
+                              'y': liked_tracks_friend.count(),
+                              'r': commonly_liked_artists_tracks
+                              }]
+                }
+            )
+    data_json = json.dumps(data, ensure_ascii=False)
+
+    return data_json

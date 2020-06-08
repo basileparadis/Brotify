@@ -1,4 +1,8 @@
+import itertools
 import logging
+import time
+import json
+
 from gevent import monkey
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -37,14 +41,25 @@ class LikedTrack(models.Model):
 
 
 class Artist(models.Model):
-    id_artist = models.CharField(max_length=25, default='')
-    name = models.CharField(max_length=100, default='')
+    id_artist = models.CharField(max_length=25, null=False, unique=True)
+    name = models.CharField(max_length=100, null=False)
+
+
+class LikedArtist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    liked_artist = models.ForeignKey(Artist, on_delete=models.CASCADE, null=False)
+    related_track = models.ForeignKey(Track, on_delete=models.CASCADE, null=False)
 
 
 class Album(models.Model):
     id_album = models.CharField(max_length=25, default='')
     name = models.CharField(max_length=100, default='')
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+
+
+def delete_all_tracks():
+    Track.objects.all().delete()
+    LikedTrack.objects.all().delete()
 
 
 # Récupérer les chansons d'un utilisateur via l'API
@@ -75,35 +90,62 @@ def get_tracks_from_api(request):
             urls.append('https://api.spotify.com/v1/me/tracks?offset=' + str(offset) + '&limit=50')
             offset += 50
         params = {'access_token': get_access_token(request)}
+        start_time = time.time()
         rs = (grequests.get(u, params=params) for u in urls)
-        results = grequests.imap(rs)
-        track_object_list = []
-        liked_object_list = []
+        results = grequests.map(rs)
+        print("mapping-- %s seconds ---" % (time.time() - start_time))
+        start_time = time.time()
+        item_object_list = [item for result in results for item in result.json()['items']]
+        '''
         for result in results:
             result = result.json()
-            for i in range(0, len(result['items'])):
-                track = Track(
-                    id_track=result['items'][i]['track']['id'],
-                    title=result['items'][i]['track']['name'],
-                    artist=result['items'][i]['track']['artists'][0]['name'],
-                    album=result['items'][i]['track']['album']['name'],
-                    url_cover_small=get_album_covers(result['items'][i]['track']['album']['images'])[0],
-                    url_cover_medium=get_album_covers(result['items'][i]['track']['album']['images'])[1],
-                    url_cover_large=get_album_covers(result['items'][i]['track']['album']['images'])[2],
-                    url_track=result['items'][i]['track']['external_urls']['spotify'],
-                    url_player=result['items'][i]['track']['preview_url'],
-                )
-                track_object_list.append(track)
-        print(len(track_object_list))
+            for item in result['items']:
+                item_object_list.append(item)
+        '''
+        print("traitement-- %s seconds ---" % (time.time() - start_time))
+        start_time = time.time()
+        track_object_list = [Track(
+            id_track=item['track']['id'],
+            title=item['track']['name'],
+            artist=item['track']['artists'][0]['name'],
+            album=item['track']['album']['name'],
+            url_cover_small=get_album_covers(item['track']['album']['images'])[0],
+            url_cover_medium=get_album_covers(item['track']['album']['images'])[1],
+            url_cover_large=get_album_covers(item['track']['album']['images'])[2],
+            url_track=item['track']['external_urls']['spotify'],
+            url_player=item['track']['preview_url'],
+        ) for item in item_object_list]
         Track.objects.bulk_create(track_object_list, ignore_conflicts=True)
-        for track in track_object_list:
+
+        liked_artist_object_list = []
+        liked_track_object_list = []
+        for item in item_object_list:
             liked_track = LikedTrack(
                 user=request.user,
-                user_song=Track.objects.get(id_track=track.id_track),
-                date_added=result['items'][i]['added_at'],
+                user_song=Track.objects.get(id_track=item['track']['id']),
+                date_added=item['added_at'],
             )
-            liked_object_list.append(liked_track)
-        LikedTrack.objects.bulk_create(liked_object_list)
+            liked_track_object_list.append(liked_track)
+            for artist in item['track']['artists']:
+                if artist['type'] == "artist":
+                    try:
+                        artist_object, artist_created = Artist.objects.get_or_create(id_artist=artist['id'], name=artist['name'])
+                        if artist_created:
+                            liked_artist_object = LikedArtist(
+                                user=request.user,
+                                liked_artist=artist_object,
+                                related_track=Track.objects.get(id_track=item['track']['id']),
+                            )
+                            liked_artist_object_list.append(liked_artist_object)
+                    except IntegrityError:
+                        print('Artiste '+artist['name']+' déjà existant')
+                        continue
+
+        print("creer objets-- %s seconds ---" % (time.time() - start_time))
+        start_time = time.time()
+        LikedTrack.objects.bulk_create(liked_track_object_list)
+        LikedArtist.objects.bulk_create(liked_artist_object_list)
+        print("bulk objets-- %s seconds ---" % (time.time() - start_time))
     track_list = get_liked_tracks_from_bd(request)
     return track_list
 
@@ -124,7 +166,15 @@ def get_album_covers(images):
 @login_required
 def get_liked_tracks_from_bd(request):
     tracks = Track.objects.filter(
-        id__in=LikedTrack.objects.filter(user=request.user).values_list('user_song_id', flat=True)
+        id__in=LikedTrack.objects.filter(user=request.user).values_list('user_song', flat=True)
         # .order_by('date_added')
     )
     return tracks
+
+
+# Obtenir l'inventaire des chansons pour un certain utilisateur
+@login_required
+def get_liked_artist_from_bd(request):
+    list_liked_artists = LikedArtist.objects.filter(user=request.user).values_list('liked_artist', flat=True)
+    artists = Artist.objects.filter(id__in=list_liked_artists)
+    return artists

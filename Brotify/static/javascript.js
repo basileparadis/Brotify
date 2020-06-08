@@ -1,5 +1,9 @@
 $(document).ready(() => {
 
+    $( function() {
+        $( "#tabs" ).tabs();
+    } );
+
     $('.tooltip').each(function() { // Grab all elements with a title attribute,and set "this"
         if(/None/g.test($(this).attr('data-*'))) {
             var text = 'Aperçu indisponible'
@@ -22,9 +26,11 @@ $(document).ready(() => {
                 }
             },
             show: {
-                solo: true
+                solo: true,
             },
-            hide: false
+            hide: {
+                event: 'click mouseleave'
+            }
         });
     });
 

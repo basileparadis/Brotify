@@ -8,7 +8,9 @@ import biblio.models as biblio
 @login_required
 def index(request):
     tracks = biblio.get_tracks_from_api(request)
-    return render(request, 'biblio.html', {'tracks': tracks})
+    artists = biblio.get_liked_artist_from_bd(request)
+    return render(request, 'biblio.html', {'tracks': tracks,
+                                           'artists': artists})
 
 
 @login_required

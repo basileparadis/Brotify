@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'bulma',
     'friendship',
     'friends',
+    'imagekit',
 ]
 
 MIDDLEWARE = [

@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Brotify{% endblock %}</title>
+    {% load static %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="http://cdn.jsdelivr.net/qtip2/3.0.3/jquery.qtip.min.js"></script>
-    <script src="/static/javascript.js"></script>
+    <script src="{% static 'javascript.js' %}"></script>
     <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    {% load static %}
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
     <link rel="stylesheet" href="/static/bulma/css/style.css">
     <link href="{% static 'hamburger.css' %}" rel="stylesheet">
@@ -22,7 +22,7 @@
           <div class="button is-rounded" id="logo">
             <a class="navbar-item has-text-black" href="/">
               <!-- <span class="icon is-large fa-stack fa-lg"><i class="fab fa-spotify fa-stack-2x" data-fa-transform="rotate-180"></i></span> -->
-              <img src="../static/bro.webp" width="30" height="30">
+              <img src="{% static 'bro.webp' %}" width="30" height="30">
               <span><strong>Brotify</strong></span>
             </a>
           </div>

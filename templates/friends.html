@@ -11,7 +11,12 @@
             <div class="media">
               <div class="media-left">
                 <figure class="image is-48x48">
-                  <img class="is-rounded" src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                  {% if user.socialuser.avatar.url %}
+                    <img class="is-rounded" src="{{ user.socialuser.avatar.url }}" alt="Profile picture">
+                  {% else %}
+                    {% load static %}
+                    <img class="is-rounded" src="{% static 'default_user_pic.webp' %}" alt="Profile picture">
+                  {% endif %}
                 </figure>
               </div>
               <div class="media-content">
@@ -57,10 +62,11 @@
     </div>
   </div>
   {% if chansons_comparees != None %}
-    <div class="box has-text-centered">
-      {% if chansons_comparees|length == 0 %}
-        Cet utilisateur n'a pas encore synchronisé son compte Spotify avec Brotify
-      {% else %}
+    {% if chansons_comparees|length == 0 %}
+      <div class="box has-text-centered">Cet utilisateur n'a pas encore synchronisé son compte Spotify avec Brotify</div>
+    {% else %}
+      <div class="box has-text-centered">
+        <h1 class="subtitle box" style="background-color: lightgray;">Chansons en commun</h1>
         {% for chanson in chansons_comparees %}
           <a href="{{ chanson.url_track }}">
             <img class="tooltip is-64x64"
@@ -71,8 +77,11 @@
             />
           </a>
         {% endfor %}
-      <div id="container" style="margin:auto;">
-        <canvas id="bubble-chart" style="position: relative; height:100vh; width:100%"></canvas>
+      </div>
+    <div class="box has-text-centered" style="margin:auto;">
+      <h1 class="subtitle box" style="background-color: lightgray;">Artistes en commun</h1>
+      <div id="graph-container" style="position: relative; width:80vw;">
+        <canvas id="bubble-chart"></canvas>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
@@ -85,6 +94,35 @@
             datasets: {{ artists_data|safe }}
           },
           options: {
+            legend: {
+              display: false
+            },
+            scales: {
+              xAxes: [{
+                type: 'logarithmic',
+                ticks: {
+                  display: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "Titres aimés par vous",
+                  fontColor: "black",
+                  fontStyle: "bold",
+                }
+              }],
+              yAxes: [{
+                type: 'logarithmic',
+                ticks: {
+                  display: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "Titres aimés par votre bro",
+                  fontColor: "black",
+                  fontStyle: "bold",
+                }
+              }]
+			},
             plugins: {
               zoom: {
                 // Container for pan options

@@ -1,12 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.contrib.auth.models import User
+from django.forms import ModelForm
 
 from accounts.models import SocialUser
 
 
-class SocialUserCreationForm(UserCreationForm):
-    '''
+class BrotifyUserCreationForm(UserCreationForm):
+    """
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
     prenom = forms.CharField(
@@ -17,8 +18,15 @@ class SocialUserCreationForm(UserCreationForm):
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Courriel', }))
     avatar = forms.ImageField(
         widget=forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Avatar', }))
-    '''
+    """
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+
+class BrotifyProfileForm(ModelForm):
+    class Meta:
+        model = SocialUser
+        fields = '__all__'
+        exclude = ['user']

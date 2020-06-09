@@ -1,10 +1,10 @@
 import json
 import random
 
+import numpy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import JsonResponse
 from friendship.models import Friend, FriendshipRequest
 from django.db import IntegrityError
 from biblio.models import LikedTrack, Track, LikedArtist, Artist
@@ -130,7 +130,6 @@ def compare_artists(request):
         Q(liked_artist__in=friend_liked_artists)
     ).values_list('liked_artist', flat=True).distinct()
 
-    labels = []
     data = []
     for artist in commonly_liked_artists:
         artist_object = Artist.objects.get(id=artist)
@@ -145,7 +144,6 @@ def compare_artists(request):
                                                                   ).values_list('user_song',
                                                                                 flat=True).distinct().count()
         if commonly_liked_artists_tracks > 0:
-            labels.append(artist_object.name)
             data.append(
                 {
                     'label': [artist_object.name],
@@ -153,7 +151,7 @@ def compare_artists(request):
                     'borderColor': "rgba(0,0,0,1)",
                     'data': [{'x': liked_tracks_you.count(),
                               'y': liked_tracks_friend.count(),
-                              'r': commonly_liked_artists_tracks
+                              'r': numpy.log(commonly_liked_artists_tracks)*15
                               }]
                 }
             )

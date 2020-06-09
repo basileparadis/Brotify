@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<div>
+    <figure class="image is-48x48">
+        <img class="is-rounded" src="{{ request.user.socialuser.avatar.url }}" alt="Profile picture">
+    </figure>
+</div>
 {% endblock %}

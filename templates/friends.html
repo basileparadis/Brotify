@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container">
@@ -14,7 +15,6 @@
                   {% if user.socialuser.avatar.url %}
                     <img class="is-rounded" src="{{ user.socialuser.avatar.url }}" alt="Profile picture">
                   {% else %}
-                    {% load static %}
                     <img class="is-rounded" src="{% static 'default_user_pic.webp' %}" alt="Profile picture">
                   {% endif %}
                 </figure>
@@ -28,32 +28,24 @@
                   <i class="fas fa-user-clock" aria-hidden="true"></i>
                 </button>
               {% elif user.id in id_invitation_received %}
-                <form action="/amis/" method="post">
-                  {% csrf_token %}
-                  <button type="submit" value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
-                    <i class="fas fa-check" aria-hidden="true"></i>
-                  </button>
-                  <button type="submit" value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
-                    <i class="fas fa-ban" aria-hidden="true"></i>
-                  </button>
-                </form>
+                <button value="{{ user.id }}" name="accept_friend" class="button is-rounded is-inverted is-success">
+                  <i class="fas fa-check" aria-hidden="true"></i>
+                </button>
+                <button value="{{ user.id }}" name="deny-friend" class="button is-rounded is-inverted is-danger">
+                  <i class="fas fa-ban" aria-hidden="true"></i>
+                </button>
               {% elif user.id in id_amis %}
-                <form action="/amis/" method="post">
-                  {% csrf_token %}
-                  <button type="submit" value="{{ user.id }}" name="compare" class="button is-rounded is-primary">
-                    <i class="fas fa-user-friends"></i>
-                  </button>
-                  <button type="submit" value="{{ user.id }}" name="remove-friend" class="button is-rounded is-inverted is-primary">
-                    <i class="fas fa-user-check" id="un-ami"></i>
-                  </button>
-                </form>
+                <button name="compare" class="button is-rounded is-primary modal-button compare_button_{{user.id}}">
+                  <i class="fas fa-user-friends"></i>
+                </button>
+                <li><a href="{% url 'compare-friend' user %}">{{ user }}</a></li>
+                <button value="{{ user.id }}" name="remove-friend" class="button is-rounded is-inverted is-primary">
+                  <i class="fas fa-user-check" id="un-ami"></i>
+                </button>
               {% elif user.id not in id_amis %}
-                <form action="/amis/" method="post">
-                {% csrf_token %}
-                  <button type="submit" value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
-                    <i class="fas fa-user-plus" aria-hidden="true"></i>
-                  </button>
-                </form>
+                <button value="{{ user.id }}" name="add-friend" class="button is-rounded is-inverted is-success">
+                  <i class="fas fa-user-plus" aria-hidden="true"></i>
+                </button>
               {% endif %}
             </div>
           </div>
@@ -61,96 +53,5 @@
       {% endfor %}
     </div>
   </div>
-  {% if chansons_comparees != None %}
-    {% if chansons_comparees|length == 0 %}
-      <div class="box has-text-centered">Cet utilisateur n'a pas encore synchronisé son compte Spotify avec Brotify</div>
-    {% else %}
-      <div class="box has-text-centered">
-        <h1 class="subtitle box" style="background-color: lightgray;">Chansons en commun</h1>
-        {% for chanson in chansons_comparees %}
-          <a href="{{ chanson.url_track }}">
-            <img class="tooltip is-64x64"
-                 src="{{ chanson.url_cover_small }}"
-                 title="{{ chanson.title }}"
-                 alt="{{ chanson.artist }}"
-                 data-*="{{ chanson.url_player }}"
-            />
-          </a>
-        {% endfor %}
-      </div>
-    <div class="box has-text-centered" style="margin:auto;">
-      <h1 class="subtitle box" style="background-color: lightgray;">Artistes en commun</h1>
-      <div id="graph-container" style="position: relative; width:80vw;">
-        <canvas id="bubble-chart"></canvas>
-      </div>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
-      <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
-      <script>
-        new Chart(document.getElementById("bubble-chart"), {
-          type: 'bubble',
-          data: {
-            labels: "Artistes",
-            datasets: {{ artists_data|safe }}
-          },
-          options: {
-            legend: {
-              display: false
-            },
-            scales: {
-              xAxes: [{
-                type: 'logarithmic',
-                ticks: {
-                  display: false
-                },
-                scaleLabel: {
-                  display: true,
-                  labelString: "Titres aimés par vous",
-                  fontColor: "black",
-                  fontStyle: "bold",
-                }
-              }],
-              yAxes: [{
-                type: 'logarithmic',
-                ticks: {
-                  display: false
-                },
-                scaleLabel: {
-                  display: true,
-                  labelString: "Titres aimés par votre bro",
-                  fontColor: "black",
-                  fontStyle: "bold",
-                }
-              }]
-			},
-            plugins: {
-              zoom: {
-                // Container for pan options
-                pan: {
-                  // Boolean to enable panning
-                  enabled: true,
-
-                  // Panning directions. Remove the appropriate direction to disable
-                  // Eg. 'y' would only allow panning in the y direction
-                  mode: 'xy'
-                },
-
-                // Container for zoom options
-                zoom: {
-                  // Boolean to enable zooming
-                  enabled: true,
-
-                  // Zooming directions. Remove the appropriate direction to disable
-                  // Eg. 'y' would only allow zooming in the y direction
-                  mode: 'xy',
-                }
-              }
-            }
-          }
-        });
-      </script>
-      {% endif %}
-    </div>
-  {% endif %}
 </div>
 {% endblock %}

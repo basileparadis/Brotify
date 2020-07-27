@@ -1,0 +1,29 @@
+{% block content %}
+    <h1 class="subtitle box">Artistes en commun</h1>
+    <span id="loading-chart" class="icon has-text-success"><i class="fab fa-spotify fa-pulse"></i></span>
+    <div id="graph-container" style="position: relative">
+        <canvas id="bubble-chart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+    <script>
+        $(document).ready( () => {
+            $.ajax({
+              url: 'compare_artists',
+              type: 'post',
+              headers: {
+                "cache-control": "no-cache",
+                "X-CSRFToken": '{{csrf_token}}'
+               },
+              data: {
+                user: {{ user.id }}
+              },
+              success: function(resp){
+                $('#loading-chart').remove();
+                new Chart(document.getElementById("bubble-chart"), JSON.parse(resp) );
+              }
+            });
+          });
+    </script>
+{% endblock %}

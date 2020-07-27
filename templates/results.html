@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="notification has-text-centered" style="width: fit-content;">
+  <a href="{{request.META.HTTP_REFERER}}" class="delete is-danger" style="background-color: red;"></a>
+  {% load friendshiptags %}
+    <div class="tabs is-toggle is-fullwidth is-large">
+      <ul>
+        <li class="is-active">
+          <a>
+            <span class="icon"><i class="fas fa-image" aria-hidden="true"></i></span>
+            <span class="result-category">Pictures</span>
+          </a>
+        </li>
+        <li>
+          <a>
+            <span class="icon"><i class="fas fa-music" aria-hidden="true"></i></span>
+            <span>Music</span>
+          </a>
+        </li>
+        <li>
+          <a>
+            <span class="icon"><i class="fas fa-film" aria-hidden="true"></i></span>
+            <span>Videos</span>
+          </a>
+        </li>
+        <li>
+          <a>
+            <span class="icon"><i class="far fa-file-alt" aria-hidden="true"></i></span>
+            <span>Documents</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div id="results">
+    {% include 'pie_chart.html' %}
+    </div>
+    <script>
+      $(document).ready( () => {
+        $.ajax({
+          url: 'compare_tracks',
+          type: 'post',
+          headers: {
+            "cache-control": "no-cache",
+            "X-CSRFToken": '{{csrf_token}}'
+           },
+          data: {
+            user: {{ user.id }}
+          },
+          success: function(resp){
+            console.log(resp);
+            $('#results').append(resp);
+          }
+        });
+      });
+    </script>
+  {% if tracks_in_common != None %}
+    {% if tracks_in_common|length == 0 %}
+      Cet utilisateur n'a pas encore synchronisé son compte Spotify avec Brotify
+    {% else %}
+      <br>
+      <br>
+      <h1 class="subtitle box">Chansons que vous pourriez aimer</h1>
+      {% for song in suggested_songs %}
+        <a href="{{ song.url_track }}">
+          <img class="tooltip is-64x64"
+               src="{{ song.url_cover_small }}"
+               title="{{ song.title }}"
+               alt="{{ song.artist }}"
+               data-*="{{ song.url_player }}"
+          />
+        </a>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+  {{ value|json_script:"resp" }}
+</div>
+{% endblock %}

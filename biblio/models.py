@@ -3,6 +3,7 @@ import logging
 import time
 import json
 
+from django.db.models import When, Case
 from gevent import monkey
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -129,16 +130,16 @@ def get_tracks_from_api(request):
             for artist in item['track']['artists']:
                 if artist['type'] == "artist":
                     try:
-                        artist_object, artist_created = Artist.objects.get_or_create(id_artist=artist['id'], name=artist['name'])
-                        if artist_created:
-                            liked_artist_object = LikedArtist(
-                                user=request.user,
-                                liked_artist=artist_object,
-                                related_track=Track.objects.get(id_track=item['track']['id']),
-                            )
-                            liked_artist_object_list.append(liked_artist_object)
+                        artist_object, artist_created = Artist.objects.get_or_create(id_artist=artist['id'],
+                                                                                     name=artist['name'])
+                        liked_artist_object = LikedArtist(
+                            user=request.user,
+                            liked_artist=artist_object,
+                            related_track=Track.objects.get(id_track=item['track']['id']),
+                        )
+                        liked_artist_object_list.append(liked_artist_object)
                     except IntegrityError:
-                        print('Artiste '+artist['name']+' déjà existant')
+                        print('Artiste ' + artist['name'] + ' déjà existant')
                         continue
 
         print("creer objets-- %s seconds ---" % (time.time() - start_time))
@@ -165,10 +166,11 @@ def get_album_covers(images):
 # Obtenir l'inventaire des chansons pour un certain utilisateur
 @login_required
 def get_liked_tracks_from_bd(request):
+    liked_tracks = LikedTrack.objects.filter(user=request.user).values_list('user_song', flat=True).order_by('date_added')
     tracks = Track.objects.filter(
-        id__in=LikedTrack.objects.filter(user=request.user).values_list('user_song', flat=True)
-        # .order_by('date_added')
+        id__in=liked_tracks
     )
+
     return tracks
 
 

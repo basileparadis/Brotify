@@ -1,0 +1,13 @@
+{% block content %}
+    <h1 class="subtitle box">Chansons en commun</h1>
+    {% for chanson in tracks_in_common %}
+        <a href="{{ chanson.url_track }}">
+          <img class="tooltip is-64x64"
+               src="{{ chanson.url_cover_small }}"
+               title="{{ chanson.title }}"
+               alt="{{ chanson.artist }}"
+               data-*="{{ chanson.url_player }}"
+          />
+        </a>
+    {% endfor %}
+{% endblock %}

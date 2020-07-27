@@ -5,28 +5,6 @@
   <div class="box">
     {{ user.social }}
   {% if user.is_authenticated %}
-    <div class="box">
-      {% if user.first_name %}
-        <p><strong>Bienvenue {{ user.first_name }}!</strong></p>
-      {% else %}
-        <p><strong>Bienvenue {{ user.username }}!</strong></p>
-      {% endif %}
-        <p><small>Dernière connexion le {{ user.last_login }}</small></p>
-    </div>
-      <form action="{% url 'social:begin' 'spotify' %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" class="button is-link is-light">
-          <span class="icon is-small"><i class="fas fa-sign-in-alt"></i></span>
-          <span>Se connecter à Spotify</span>
-        </button>
-      </form>
-      <form action="{% url 'social:disconnect' 'spotify' %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" class="button is-link is-light">
-          <span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
-          <span>Se déconnecter de Spotify</span>
-        </button>
-      </form>
       <form action="{% url 'logout' %}" method="POST">
         {% csrf_token %}
         <button type="submit" class="button is-link is-light">
@@ -35,7 +13,7 @@
         </button>
       </form>
   {% else %}
-    <p><strong>Bienvenue sur Brotify!</strong></p>
+    <h1><strong>Bienvenue sur Brotify!</strong></h1>
     <p>Vous n'êtes pas connecté</p>
     <a href="{% url 'login' %}">Se connecter</a>
     <a href="{% url 'signup' %}">S'inscrire</a>

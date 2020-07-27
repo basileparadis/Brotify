@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from accounts.forms import BrotifyUserCreationForm
+from accounts.forms import BrotifyUserCreationForm, BrotifyProfileForm
 
 
 class SignUp(CreateView):
@@ -18,4 +18,14 @@ class SignUp(CreateView):
 
 @login_required
 def index(request):
-    return render(request, 'profile.html')
+    user = request.user.socialuser
+    form = BrotifyProfileForm(instance=user)
+
+    if request.method == 'POST':
+        form = BrotifyProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+
+    context = {'form': form}
+    return render(request, 'profile.html', context)
+

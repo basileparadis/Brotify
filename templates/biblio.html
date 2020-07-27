@@ -2,22 +2,69 @@
 
 {% block content %}
 <div class="container has-text-centered">
-  <div class="box">
-    {% if tracks == 'Introuvable' %}
-        <div class="box">Profil introuvable, veuillez vous reconnecter à Spotify.</div>
-    {% else %}
-        <div class="box">{{ tracks|length }} chansons</div>
-        {% for track in tracks %}
-        <a href="{{ track.url_track }}">
-            <img class="tooltip is-64x64"
-                 src="{{ track.url_cover_small }}"
-                 title="{{ track.title }}"
-                 alt="{{ track.artist }}"
-                 data-*="{{ track.url_player }}"
-            />
-        </a>
-        {% endfor %}
-    {% endif %}
-  </div>
+    <div class="box">
+        <div class="box">
+          {% if user.is_authenticated %}
+              {% if user.first_name %}
+                <p><strong>Bienvenue {{ user.first_name }}!</strong></p>
+              {% else %}
+                <p><strong>Bienvenue {{ user.username }}!</strong></p>
+              {% endif %}
+              {% if request.user.socialuser.avatar %}
+                <figure class="image is-96x96" style="margin: auto;">
+                    <img class="is-rounded" src="{{ request.user.socialuser.avatar.url }}" alt="Profile picture">
+                </figure>
+              {% endif %}
+                <p><small>Dernière connexion le {{ user.last_login }}</small></p>
+              {% if user.social_auth.all.0 is not None %}
+                <strong>{{ tracks|length }} chansons</strong>
+                <form action="{% url 'social:disconnect' 'spotify' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="button is-link is-light">
+                      <span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
+                      <span>Se déconnecter de Spotify</span>
+                    </button>
+                </form>
+              {% endif %}
+            </div>
+            {% if user.social_auth.all.0 is None %}
+                <h1>Vous n'êtes pas connecté à Spotify, veuillez vous reconnecter.</h1>
+                <br>
+                <form action="{% url 'social:begin' 'spotify' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="button is-link is-light">
+                      <span class="icon is-small"><i class="fas fa-sign-in-alt"></i></span>
+                      <span>Se connecter à Spotify</span>
+                    </button>
+                </form>
+            {% elif user.social_auth.all.0 is not None %}
+                <form action="/" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="button" name="refresh">
+                        <span class="icon">
+                          <i class="fas fa-sync-alt"></i>
+                        </span>
+                        <span>Synchroniser</span>
+                    </button>
+                </form>
+                <br>
+                {% for track in tracks %}
+                <a href="{{ track.url_track }}">
+                    <img class="tooltip is-64x64"
+                         src="{{ track.url_cover_small }}"
+                         title="{{ track.title }}"
+                         alt="{{ track.artist }}"
+                         data-*="{{ track.url_player }}"
+                    />
+                </a>
+                {% endfor %}
+            {% endif %}
+          {% else %}
+            <h1><strong>Bienvenue sur Brotify!</strong></h1>
+            <p>Vous n'êtes pas connecté</p>
+            <a href="{% url 'login' %}">Se connecter</a>
+            <a href="{% url 'signup' %}">S'inscrire</a>
+          {% endif %}
+    </div>
 </div>
 {% endblock %}

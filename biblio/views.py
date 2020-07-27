@@ -1,4 +1,7 @@
 # Create your views here.
+from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.template import loader
 from social_django.utils import load_strategy
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -7,10 +10,27 @@ import biblio.models as biblio
 
 @login_required
 def index(request):
-    tracks = biblio.get_tracks_from_api(request)
+    template = loader.get_template('biblio.html')
+
+    if 'refresh' in request.POST:
+        tracks = biblio.get_tracks_from_api(request)
+    else:
+        tracks = biblio.get_liked_tracks_from_bd(request)
+        print(len(tracks))
+        # paginator = Paginator(tracks, 20)
+
     artists = biblio.get_liked_artist_from_bd(request)
+
+    context = {
+        'tracks': tracks,
+        'artists': artists,
+    }
+
+    '''
     return render(request, 'biblio.html', {'tracks': tracks,
-                                           'artists': artists})
+                                               'artists': artists})
+                                               '''
+    return HttpResponse(template.render(context, request))
 
 
 @login_required

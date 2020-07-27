@@ -53,7 +53,7 @@ def get_received_friend_request(request):
 # Accepter une demande d'amitié
 @login_required
 def accepter_amitie(request):
-    ami_potentiel_id = int(request.POST.get('accept_friend'))
+    ami_potentiel_id = int(request.POST.get('user'))
     try:
         friend_request = FriendshipRequest.objects.get(from_user=ami_potentiel_id, to_user=request.user.id)
         friend_request.accept()
@@ -68,9 +68,9 @@ def accepter_amitie(request):
 # Refuser une demande d'amitié
 @login_required
 def refuser_amitie(request):
-    ami_potentiel_id = request.POST.get('deny-friend')
+    ami_potentiel_id = request.POST.get('user')
     try:
-        friend_request = FriendshipRequest.objects.get(from_user=request.user.id, to_user=ami_potentiel_id)
+        friend_request = FriendshipRequest.objects.get(from_user=ami_potentiel_id, to_user=request.user.id)
         friend_request.reject()
     except FriendshipRequest.DoesNotExist as exception:
         print("La demande d'amitié est introuvable")
@@ -80,7 +80,7 @@ def refuser_amitie(request):
 # Enlever un lien d'amitié existant
 @login_required
 def retirer_amitie(request):
-    personne_id = request.POST.get('remove-friend')
+    personne_id = request.POST.get('user')
     try:
         Friend.objects.remove_friend(request.user, User.objects.get(id=personne_id))
     except User.DoesNotExist as exception:
@@ -91,7 +91,7 @@ def retirer_amitie(request):
 # Envoyer une demande d'amitié
 @login_required
 def add_friendship(request):
-    personne_id = request.POST.get('add-friend')
+    personne_id = request.POST.get('user')
     try:
         Friend.objects.add_friend(request.user, User.objects.get(id=personne_id))
     except User.DoesNotExist as exception:
@@ -104,10 +104,10 @@ def add_friendship(request):
 
 # Lister les morceaux communs aux deux utilisateurs
 @login_required
-def compare_songs(request):
+def compare_songs(request, friend):
     # Définir les usagers
     usager = request.user
-    ami = User.objects.get(id=request.POST.get('compare'))
+    ami = friend
     # Obtenir une liste des id des chansons d'un utilisateur (biblio)
     user_liked_tracks = LikedTrack.objects.filter(user=usager).values_list('user_song', flat=True)
     friend_liked_tracks = LikedTrack.objects.filter(user=ami).values_list('user_song', flat=True)
@@ -118,9 +118,10 @@ def compare_songs(request):
 
 # Lister les artistes communs aux deux utilisateurs
 @login_required
-def compare_artists(request):
+def compare_artists(request, friend):
+    print(friend)
     usager = request.user
-    ami = User.objects.get(id=request.POST.get('compare'))
+    ami = User.objects.get(username=friend)
 
     user_liked_artists = LikedArtist.objects.filter(user=usager).values_list('liked_artist', flat=True)
     friend_liked_artists = LikedArtist.objects.filter(user=ami).values_list('liked_artist', flat=True)
@@ -147,14 +148,92 @@ def compare_artists(request):
             data.append(
                 {
                     'label': [artist_object.name],
-                    'backgroundColor': "#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]),
+                    'backgroundColor': "#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]),
                     'borderColor': "rgba(0,0,0,1)",
                     'data': [{'x': liked_tracks_you.count(),
                               'y': liked_tracks_friend.count(),
-                              'r': numpy.log(commonly_liked_artists_tracks)*15
+                              'r': numpy.log(commonly_liked_artists_tracks) * 15
                               }]
                 }
             )
-    data_json = json.dumps(data, ensure_ascii=False)
-
+    data_json = {
+        'type': 'bubble',
+        'data': {
+          'labels': 'Artistes',
+          'datasets': data
+        },
+        'options': {
+            'legend': {
+                'display': False
+            },
+            'scales': {
+                'xAxes': [{
+                    'type': 'logarithmic',
+                    'ticks': {
+                        'display': False
+                    },
+                    'scaleLabel': {
+                        'display': True,
+                        'labelString': 'Aimés par vous',
+                        'fontColor': 'black',
+                        'fontStyle': 'bold',
+                    }
+                }],
+                'yAxes': [{
+                    'type': 'logarithmic',
+                    'ticks': {
+                        'display': False
+                    },
+                    'scaleLabel': {
+                        'display': True,
+                        'labelString': 'Aimés par '+ami.username,
+                        'fontColor': 'black',
+                        'fontStyle': 'bold',
+                    }
+                }]
+            },
+            'plugins': {
+                'zoom': {
+                    'pan': {
+                        'enabled': True,
+                        'mode': 'xy'
+                    },
+                    'zoom': {
+                        'enabled': True,
+                        'mode': 'xy',
+                    }
+                }
+            }
+        }
+    }
+    data_json = json.dumps(data_json, ensure_ascii=False)
     return data_json
+
+
+def get_suggested_tracks(request, friend):
+    usager = request.user
+    ami = friend
+
+    user_liked_artists = LikedArtist.objects.filter(user=usager).values_list('liked_artist', flat=True)
+    friend_liked_artists = LikedArtist.objects.filter(user=ami).values_list('liked_artist', flat=True)
+
+    commonly_liked_artists = LikedArtist.objects.filter(
+        Q(liked_artist__in=user_liked_artists),
+        Q(liked_artist__in=friend_liked_artists)
+    ).values_list('liked_artist', flat=True).distinct()
+
+    data = []
+    for artist in commonly_liked_artists:
+        liked_tracks_you = LikedArtist.objects.filter(Q(liked_artist=artist),
+                                                      Q(user=usager)
+                                                      ).values_list('related_track', flat=True)
+        liked_tracks_friend = LikedArtist.objects.filter(Q(liked_artist=artist),
+                                                         Q(user=ami)
+                                                         ).values_list('related_track', flat=True)
+        commonly_liked_artists_tracks = LikedTrack.objects.filter(~Q(user_song__in=liked_tracks_you),
+                                                                  Q(user_song__in=liked_tracks_friend)
+                                                                  ).values_list('user_song', flat=True).distinct()
+        for i in commonly_liked_artists_tracks:
+            data.append(Track.objects.get(id=i))
+
+    return data

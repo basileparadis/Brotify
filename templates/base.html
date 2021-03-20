@@ -29,7 +29,6 @@
             <nav id="navigation" class="navbar-dropdown is-right is-hidden-desktop">
           {% if user.is_authenticated %}
             <a class="navbar-item" href="/profile">Mon profil</a>
-            <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
             <a class="navbar-item" href="/amis">Mes amis</a>
           {% else %}
             <a class="navbar-item" href="{% url 'signup' %}"><span>S'inscrire</span></a>
@@ -46,7 +45,6 @@
           {% if user.is_authenticated %}
           <div class="navbar-start">
             <a class="navbar-item" href="/profile">Mon profil</a>
-            <a class="navbar-item" href="/biblio">Ma bibliothèque</a>
             <a class="navbar-item" href="/amis">Mes amis</a>
           </div>
           {% endif %}

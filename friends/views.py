@@ -13,6 +13,15 @@ import friends.models as amitie
 def index(request):
     template = loader.get_template('friends.html')
 
+    if 'accept_friend' in request.POST:
+        amitie.accepter_amitie(request)
+    elif 'deny-friend' in request.POST:
+        amitie.refuser_amitie(request)
+    elif 'add-friend' in request.POST:
+        amitie.add_friendship(request)
+    elif 'remove-friend' in request.POST:
+        amitie.retirer_amitie(request)
+
     users = User.objects.all()
     social_user = SocialUser.objects.all().order_by('-id')
 

@@ -10581,7 +10581,7 @@ body {
 
 body .navbar {
   background-color: #1DB954;
-  background-color-position: -webkit-sticky;
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
 }
@@ -10619,11 +10619,15 @@ body .container {
   min-height: 70vh;
 }
 
-body .container .result-category {
-  background-color: lightgreen;
-  font-family: Gotham-Light;
+body .container .tabs a {
+  text-decoration: none !important;
+}
+
+body .container .tabs.is-toggle li.is-active a {
+  color: #FFFFFF;
+  background-color: #1DB954;
+  border-color: #191414;
   font-weight: bold;
-  color: black;
 }
 
 body .container .is-64x64 {

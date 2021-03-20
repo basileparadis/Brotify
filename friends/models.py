@@ -53,7 +53,7 @@ def get_received_friend_request(request):
 # Accepter une demande d'amitié
 @login_required
 def accepter_amitie(request):
-    ami_potentiel_id = int(request.POST.get('user'))
+    ami_potentiel_id = int(request.POST.get('accept_friend'))
     try:
         friend_request = FriendshipRequest.objects.get(from_user=ami_potentiel_id, to_user=request.user.id)
         friend_request.accept()
@@ -68,7 +68,7 @@ def accepter_amitie(request):
 # Refuser une demande d'amitié
 @login_required
 def refuser_amitie(request):
-    ami_potentiel_id = request.POST.get('user')
+    ami_potentiel_id = request.POST.get('deny-friend')
     try:
         friend_request = FriendshipRequest.objects.get(from_user=ami_potentiel_id, to_user=request.user.id)
         friend_request.reject()
@@ -80,7 +80,7 @@ def refuser_amitie(request):
 # Enlever un lien d'amitié existant
 @login_required
 def retirer_amitie(request):
-    personne_id = request.POST.get('user')
+    personne_id = request.POST.get('remove-friend')
     try:
         Friend.objects.remove_friend(request.user, User.objects.get(id=personne_id))
     except User.DoesNotExist as exception:
@@ -91,7 +91,8 @@ def retirer_amitie(request):
 # Envoyer une demande d'amitié
 @login_required
 def add_friendship(request):
-    personne_id = request.POST.get('user')
+    print(request.POST.get('add-friend'))
+    personne_id = request.POST.get('add-friend')
     try:
         Friend.objects.add_friend(request.user, User.objects.get(id=personne_id))
     except User.DoesNotExist as exception:
@@ -119,7 +120,6 @@ def compare_songs(request, friend):
 # Lister les artistes communs aux deux utilisateurs
 @login_required
 def compare_artists(request, friend):
-    print(friend)
     usager = request.user
     ami = User.objects.get(username=friend)
 

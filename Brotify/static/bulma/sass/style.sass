@@ -33,7 +33,7 @@ body
 
     .navbar
         background-color: #1DB954
-                position: -webkit-sticky
+        position: -webkit-sticky
         position: sticky
         top: 0
 
@@ -63,11 +63,14 @@ body
         justify-content: center
         min-height: 70vh
 
-        .result-category
-            background-color: lightgreen
-            font-family: Gotham-Light
+        .tabs a
+            text-decoration: none !important
+
+        .tabs.is-toggle li.is-active a
+            color: #FFFFFF
+            background-color: #1DB954
+            border-color: #191414
             font-weight: bold
-            color: black
 
         .is-64x64
             height: 64px

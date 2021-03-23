@@ -1,10 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 
 # Create your views here.
-from django.template import RequestContext
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from accounts.forms import BrotifyUserCreationForm, BrotifyProfileForm
@@ -27,24 +25,25 @@ class UserLogin(LoginView):
 
 @login_required
 def index(request):
-    user = request.user.socialuser
-    # form = BrotifyProfileForm(instance=user)
-    form = SocialUser.objects.get(user=request.user)
+
+    try:
+        social_user = request.user.socialuser
+    except SocialUser.DoesNotExist:
+        SocialUser.objects.create(**{'user': request.user})
+        social_user = request.user.socialuser
+
+    user_form = BrotifyProfileForm(request.POST, request.FILES, instance=social_user)
 
     if request.method == 'POST':
-        user_form = BrotifyProfileForm(request.POST, request.FILES, instance=user)
-        profile_form = BrotifyUserCreationForm(request.POST)
-        if user_form.is_valid() and profile_form.is_valid():
-            form.save()
-            SocialUser.objects.create(**{'user': user})
+        if user_form.is_valid():
+            user_form.save()
 
-    context = {'form': form}
+    context = {'form': user_form}
     return render(request, 'profile.html', context)
 
 
 def login_user(request):
     logout(request)
-    username = password = ''
     if request.POST:
         username = request.POST['username']
         password = request.POST['password']
@@ -55,4 +54,3 @@ def login_user(request):
                 login(request, user)
                 return HttpResponseRedirect('/')
     return render('login.html')
-

@@ -4,22 +4,18 @@
 <div class="container has-text-centered">
     <div class="box">
         <figure class="image is-96x96" style="margin: auto;">
-            {% if request.user.socialuser.avatar %}
-                <img class="is-rounded" src="{{ request.user.socialuser.avatar.url }}" alt="Profile picture">
-            {% else %}
-                {% load static %}
-                <img class="is-rounded" src="{% static 'default_user_pic.webp' %}" alt="Profile picture">
-            {% endif %}
+          {% if request.user.socialuser.avatar %}
+            <img class="is-rounded" src="{{ user.socialuser.get_photo_resized }}" alt="Profile picture">
+          {% else %}
+            {% load static %}
+            <img class="is-rounded" src="{% static 'profile_pic/default_user_pic.webp' %}" alt="Profile picture">
+          {% endif %}
         </figure>
         <b>{{ request.user.first_name }} {{ request.user.last_name }}</b>
         <br>
         <form method="POST" action="" enctype="multipart/form-data">
             {% csrf_token %}
-            {% for field in form %}
-                {{ field.errors }}
-                {{ field }}
-                <br>
-            {% endfor %}
+            {{ form.as_p }}
             <input class="button" type="submit" name="Mettre à jour">
         </form>
     </div>

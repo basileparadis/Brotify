@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'friends',
     'imagekit',
     'debug_toolbar',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,9 @@ SOCIAL_AUTH_PIPELINE = (
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+CELERY_BROKER_URL = ''
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'celery-db'

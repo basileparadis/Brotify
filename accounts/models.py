@@ -1,10 +1,12 @@
 import os
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
 from django.dispatch import receiver
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from stdimage import StdImageField
 
 '''
 # Create your models here.
@@ -25,18 +27,48 @@ class UserProfile(models.Model):
 class SocialUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='default_user_pic.webp',
-                               null=True,
-                               blank=True,
                                upload_to='profile_pic',
-                               verbose_name='Avatar')
+                               verbose_name='Avatar',
+                               null=False,
+                               blank=False)
+    '''avatar = StdImageField(upload_to='profile_pic',
+                           variations={'miniature': {"width": 100, "height": 100, "crop": True}},
+                           null=True,
+                           blank=True)'''
     avatar_thumbnail = ImageSpecField(source='avatar',
                                       processors=[ResizeToFill(50, 50)],
                                       format='JPEG',
                                       options={'quality': 100})
+    avatar_resized = ImageSpecField(source='avatar',
+                                    processors=[ResizeToFill(100, 100)],
+                                    format='JPEG',
+                                    options={'quality': 100})
     description = models.TextField(max_length=2000,
                                    default='',
                                    null=True,
                                    blank=True)
+
+    @property
+    def get_photo_url(self):
+        if self.avatar and hasattr(self.avatar, 'url'):
+            return self.avatar.url
+        else:
+            return "/static/profile_pic/default_user_pic.webp"
+
+    @property
+    def get_photo_resized(self):
+        if self.avatar_resized and hasattr(self.avatar_resized, 'url'):
+            return self.avatar_resized.url
+        else:
+            return "/static/profile_pic/default_user_pic.webp"
+
+    @property
+    def get_thumbnail_url(self):
+        if self.avatar_thumbnail and hasattr(self.avatar_thumbnail, 'url'):
+            return self.avatar_thumbnail.url
+        else:
+            return "/static/profile_pic/default_user_pic.webp"
+
 
 # These two auto-delete files from filesystem when they are unneeded:
 

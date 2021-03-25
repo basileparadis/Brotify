@@ -3,13 +3,10 @@ import logging
 import time
 import json
 
-from django.db.models import When, Case
 from gevent import monkey
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models, IntegrityError
-from biblio.views import get_access_token, refresh_access_token
+from django.db import models
 
 
 def stub(*args, **kwargs):  # pylint: disable=unused-argument
@@ -61,94 +58,6 @@ class Album(models.Model):
 def delete_all_tracks():
     Track.objects.all().delete()
     LikedTrack.objects.all().delete()
-
-
-# Récupérer les chansons d'un utilisateur via l'API
-@login_required
-def get_tracks_from_api(request):
-    liked_tracks = LikedTrack.objects.filter(user=request.user)
-    try:
-        response = requests.get('https://api.spotify.com/v1/me/tracks',
-                                params={'access_token': get_access_token(request),
-                                        'limit': 50})
-        data = response.json()
-        total = data['total']
-    except KeyError:
-        response = requests.get('https://api.spotify.com/v1/me/tracks',
-                                params={'access_token': refresh_access_token(request),
-                                        'limit': 50})
-        data = response.json()
-        total = data['total']
-    except ConnectionError:
-        return 'Problème de connexion'
-    except ObjectDoesNotExist:
-        return 'Introuvable'
-    if total != liked_tracks.count():
-        liked_tracks.delete()
-        offset = 0
-        urls = []
-        while offset < total:
-            urls.append('https://api.spotify.com/v1/me/tracks?offset=' + str(offset) + '&limit=50')
-            offset += 50
-        params = {'access_token': get_access_token(request)}
-        start_time = time.time()
-        rs = (grequests.get(u, params=params) for u in urls)
-        results = grequests.map(rs)
-        print("mapping-- %s seconds ---" % (time.time() - start_time))
-        start_time = time.time()
-        item_object_list = [item for result in results for item in result.json()['items']]
-        '''
-        for result in results:
-            result = result.json()
-            for item in result['items']:
-                item_object_list.append(item)
-        '''
-        print("traitement-- %s seconds ---" % (time.time() - start_time))
-        start_time = time.time()
-        track_object_list = [Track(
-            id_track=item['track']['id'],
-            title=item['track']['name'],
-            artist=item['track']['artists'][0]['name'],
-            album=item['track']['album']['name'],
-            url_cover_small=get_album_covers(item['track']['album']['images'])[0],
-            url_cover_medium=get_album_covers(item['track']['album']['images'])[1],
-            url_cover_large=get_album_covers(item['track']['album']['images'])[2],
-            url_track=item['track']['external_urls']['spotify'],
-            url_player=item['track']['preview_url'],
-        ) for item in item_object_list]
-        Track.objects.bulk_create(track_object_list, ignore_conflicts=True)
-
-        liked_artist_object_list = []
-        liked_track_object_list = []
-        for item in item_object_list:
-            liked_track = LikedTrack(
-                user=request.user,
-                user_song=Track.objects.get(id_track=item['track']['id']),
-                date_added=item['added_at'],
-            )
-            liked_track_object_list.append(liked_track)
-            for artist in item['track']['artists']:
-                if artist['type'] == "artist":
-                    try:
-                        artist_object, artist_created = Artist.objects.get_or_create(id_artist=artist['id'],
-                                                                                     name=artist['name'])
-                        liked_artist_object = LikedArtist(
-                            user=request.user,
-                            liked_artist=artist_object,
-                            related_track=Track.objects.get(id_track=item['track']['id']),
-                        )
-                        liked_artist_object_list.append(liked_artist_object)
-                    except IntegrityError:
-                        print('Artiste ' + artist['name'] + ' déjà existant')
-                        continue
-
-        print("creer objets-- %s seconds ---" % (time.time() - start_time))
-        start_time = time.time()
-        LikedTrack.objects.bulk_create(liked_track_object_list)
-        LikedArtist.objects.bulk_create(liked_artist_object_list)
-        print("bulk objets-- %s seconds ---" % (time.time() - start_time))
-    track_list = get_liked_tracks_from_bd(request)
-    return track_list
 
 
 def get_album_covers(images):

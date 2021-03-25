@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'imagekit',
     'debug_toolbar',
     'django_celery_results',
+    'celery_progress',
 ]
 
 MIDDLEWARE = [
@@ -165,8 +166,8 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-CELERY_BROKER_URL = ''
-
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'celery-db'
+CELERY_BROKER_URL = 'redis://:pRoSiciTuSTA@127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_TASK_SERIALIZER = 'pickle'

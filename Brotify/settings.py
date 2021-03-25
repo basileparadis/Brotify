@@ -25,16 +25,15 @@ SOCIAL_AUTH_SPOTIFY_SECRET = 'fcc929c760694cf1aac2d0eeb50ed98f'
 SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-library-read']
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = '1rv==iz)yoao&f+q6!8@b6_q8h8poxhqusz@-5pig(ka4x&f(1'
-SECRET_KEY = os.environ.get('SECRET_KEY', 'warning-override-for-production')
+SECRET_KEY = '1rv==iz)yoao&f+q6!8@b6_q8h8poxhqusz@-5pig(ka4x&f(1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = False
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST', '')]
+ALLOWED_HOSTS = ['*']
+USE_X_FORWARDED_PORT = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

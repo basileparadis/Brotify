@@ -1,0 +1,94 @@
+// 1. Import the initial variables
+@import "./node_modules/bulma/sass/utilities/initial-variables"
+
+// 2. Set your own initial variables
+
+// 3. Import the rest of Bulma
+@import "./node_modules/bulma/bulma"
+
+// 4. Import your stuff here
+@font-face
+  font-family: 'Gotham-Light';
+  src: url("/static/GothamHTF-Light.otf")
+
+@font-face
+  font-family: 'Gotham-Bold';
+  src: url("/static/GothamHTF-Bold.otf")
+
+.qtip-default
+    background-color: black !important
+
+    .qtip-titlebar
+        background-color: green !important
+        color: black
+
+    .qtip-content
+        color: white
+
+        video
+            height: 50px
+
+body
+    background-color: #191414
+
+    .navbar
+        background-color: #1DB954
+        position: -webkit-sticky
+        position: sticky
+        top: 0
+
+        .navbar-brand
+            display: flex
+            align-items: center
+
+            #logo
+                margin: auto auto auto 10px!important
+                max-width: 90%
+                a
+                    font-family: Gotham-Bold
+
+            #navigation
+                display: none
+
+        a.navbar-item
+            font-family: Gotham-Light
+            font-weight: bold
+            color: black
+            display: flex
+            align-items: center
+
+    .container
+        display: flex
+        flex-direction: column
+        justify-content: center
+        min-height: 75vh
+
+        .tabs a
+            text-decoration: none !important
+
+        .tabs.is-toggle li.is-active a
+            color: #FFFFFF
+            background-color: #1DB954
+            border-color: #191414
+            font-weight: bold
+
+        .is-64x64
+            height: 64px
+
+        .grid-container
+            display: grid
+            grid-template-columns: auto
+            background-color: #2196F3
+
+            .grid-item
+                border: 1px solid rgba(0, 0, 0, 0.8)
+                padding: 15px
+                text-align: center
+
+        .button.is-info
+            pointer-events: none
+            cursor: default
+
+    .footer
+        background-color: lightgray
+        padding: 1.5rem 1.5rem 1.5rem

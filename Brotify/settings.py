@@ -25,12 +25,13 @@ SOCIAL_AUTH_SPOTIFY_SECRET = 'fcc929c760694cf1aac2d0eeb50ed98f'
 SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-library-read']
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1rv==iz)yoao&f+q6!8@b6_q8h8poxhqusz@-5pig(ka4x&f(1'
+# SECRET_KEY = '1rv==iz)yoao&f+q6!8@b6_q8h8poxhqusz@-5pig(ka4x&f(1'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'warning-override-for-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST', '')]
 
 # Application definition
 
@@ -136,6 +137,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(ROOT_PATH, 'static')]
 

@@ -6,7 +6,6 @@ from django.db import models
 from django.dispatch import receiver
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-from stdimage import StdImageField
 
 '''
 # Create your models here.

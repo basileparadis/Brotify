@@ -12,7 +12,7 @@
               {% endif %}
               {% if request.user.socialuser.avatar %}
                 <figure class="image is-96x96" style="margin: auto;">
-                    <img class="is-rounded" src="{{ request.user.socialuser.avatar.url }}" alt="Profile picture">
+                    <img class="is-rounded" src="{{ request.user.socialuser.get_photo_resized }}" alt="Profile picture">
                 </figure>
               {% endif %}
                 <p><small>Dernière connexion le {{ user.last_login }}</small></p>

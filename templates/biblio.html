@@ -39,25 +39,32 @@
                 </form>
             {% elif user.social_auth.all.0 is not None %}
                 {% if task_id %}
+                    {% url 'celery_progress:task_status' task_id %}
                     <div class='progress-wrapper'>
                       <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
                     </div>
-                    <div id="progress-bar-message"><a class="button is-loading">Loading</a>Patientez, cette opération peut prendre plusieurs secondes</div>
+                    <div id="progress-bar-message"></div>
+                    <a class="button is-static">
+                        <span id="loading-chart" class="icon has-text-success"><i class="fab fa-spotify fa-pulse"></i></span>
+                        <span>Récupération et traitement des données de votre compte...</span>
+                    </a>
                     {% load static %}
                     <script src="{% static 'celery_progress/celery_progress.js' %}"></script>
                     <script>
-                        var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+                        $(document).ready(function() {
+                            var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
 
-                        function customResult(resultElement, result) {
-                          $( resultElement ).append(
-                            $('<p>').text('Synchronisation effectuée en ' + result + ' secondes. Veuillez recharger la page')
-                          );
-                        }
+                            function customResult(resultElement, result) {
+                              $( resultElement ).append(
+                                $('<p>').text('Sum of all seconds is ' + result)
+                              );
+                            }
 
-                        $(function () {
-                          CeleryProgressBar.initProgressBar(progressUrl, {
-                            onResult: customResult,
-                          })
+                            $(function () {
+                              CeleryProgressBar.initProgressBar(progressUrl, {
+                                onResult: customResult,
+                              })
+                            });
                         });
                     </script>
                 {% else %}

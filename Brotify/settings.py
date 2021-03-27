@@ -30,7 +30,7 @@ SECRET_KEY = '1rv==iz)yoao&f+q6!8@b6_q8h8poxhqusz@-5pig(ka4x&f(1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.brotify.ca', '127.0.1.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'brotify.ca', '127.0.1.1']
 USE_X_FORWARDED_PORT = True
 
 # Application definition

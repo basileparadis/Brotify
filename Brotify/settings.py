@@ -167,8 +167,10 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-CELERY_BROKER_URL = 'redis://:pRoSiciTuSTA@127.0.0.1:6379'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+REDIS_HOST = os.environ.get('REDIS_HOST', 'redis')
+CELERY_BROKER_URL = 'redis://:pRoSiciTuSTA@redis:6379'
+# CELERY_RESULT_BACKEND = 'redis://:pRoSiciTuSTA@redis:6379'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_TASK_SERIALIZER = 'pickle'

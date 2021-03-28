@@ -167,10 +167,11 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-REDIS_HOST = os.environ.get('REDIS_HOST', 'redis')
-CELERY_BROKER_URL = 'redis://:pRoSiciTuSTA@redis:6379'
-# CELERY_RESULT_BACKEND = 'redis://:pRoSiciTuSTA@redis:6379'
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'redis://:pRoSiciTuSTA@redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://:pRoSiciTuSTA@redis:6379/1'
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+C_FORCE_ROOT = True

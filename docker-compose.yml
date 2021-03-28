@@ -2,7 +2,7 @@ version: "3.2"
 services:
 
   redis:
-    image: "redis:latest"
+    image: "redis:alpine"
 
     command: redis-server --requirepass pRoSiciTuSTA
 
@@ -16,5 +16,6 @@ services:
     build: .
     environment:
       - REDIS_HOST=redis
+      - C_FORCE_ROOT=true
     ports:
       - "80:8000"

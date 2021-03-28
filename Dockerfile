@@ -15,6 +15,7 @@ WORKDIR /code
 
 EXPOSE 8000
 
+RUN celery -A Brotify worker -l info --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -D
 # runs the production server
 ENTRYPOINT ["python", "manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]

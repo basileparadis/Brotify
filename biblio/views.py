@@ -12,7 +12,7 @@ from Brotify.celery_tasks import get_tracks_from_api
 def index(request):
     template = loader.get_template('biblio.html')
 
-    id_task = ''
+    id_task = None
     if 'refresh' in request.POST:
         id_task = get_tracks_from_api.delay(request.user)
 

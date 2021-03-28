@@ -49,9 +49,11 @@ def get_tracks_from_api(self, user):
         return 'Problème de connexion'
     except ObjectDoesNotExist:
         return 'Introuvable'
-    if total != liked_tracks.count():
+    if total == liked_tracks.count():
+        progress_recorder.set_progress(liked_tracks.count(), total)
+    else:
         liked_tracks.delete()
-        result = 0
+        current = 0
         offset = 0
         urls = []
         while offset < total:
@@ -64,6 +66,7 @@ def get_tracks_from_api(self, user):
         print("mapping-- %s seconds ---" % (time.time() - start_time))
         start_time = time.time()
         item_object_list = [item for result in results for item in result.json()['items']]
+        progress_recorder.set_progress(current, len(item_object_list))
 
         print("traitement-- %s seconds ---" % (time.time() - start_time))
         start_time = time.time()
@@ -81,8 +84,8 @@ def get_tracks_from_api(self, user):
                 url_track=item['track']['external_urls']['spotify'],
                 url_player=item['track']['preview_url'],
             ))
-            result += item
-            progress_recorder.set_progress(item + 1, item_object_list)
+            current += 1
+            progress_recorder.set_progress(current, len(item_object_list))
         Track.objects.bulk_create(track_object_list, ignore_conflicts=True)
 
         liked_artist_object_list = []
@@ -108,16 +111,14 @@ def get_tracks_from_api(self, user):
                     except IntegrityError:
                         print('Artiste ' + artist['name'] + ' déjà existant')
                         continue
-                result += artist
-                progress_recorder.set_progress(artist + 1, item['track']['artists'])
-            result += artist
-            progress_recorder.set_progress(artist + 1, item['track']['artists'])
 
         print("creer objets-- %s seconds ---" % (time.time() - start_time))
         start_time = time.time()
         LikedTrack.objects.bulk_create(liked_track_object_list)
         LikedArtist.objects.bulk_create(liked_artist_object_list)
         print("bulk objets-- %s seconds ---" % (time.time() - start_time))
+
+    return 0
 
 
 def get_access_token(user):

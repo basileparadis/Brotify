@@ -11,6 +11,7 @@ services:
 
     environment:
      - REDIS_REPLICATION_MODE=master
+     - C_FORCE_ROOT=true
 
   app:
     build: .

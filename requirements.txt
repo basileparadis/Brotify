@@ -1,15 +1,15 @@
-amqp==5.0.5
+amqp==5.0.6
 asgiref==3.3.1
-billiard==3.6.3.0
+billiard==3.6.4.0
 celery @ https://github.com/celery/celery/zipball/master
 celery-progress==0.1.0
 certifi==2020.12.5
 cffi==1.14.5
 chardet==4.0.0
-click==7.1.2
+click==8.0
 click-didyoumean==0.0.3
 click-plugins==1.1.1
-click-repl==0.1.6
+click-repl==0.2.0
 cryptography==3.4.6
 cycler==0.10.0
 defusedxml==0.7.1

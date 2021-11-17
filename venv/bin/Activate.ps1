@@ -45,7 +45,7 @@ command:
 PS C:\> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 For more information on Execution Policies: 
-ttps:/go.microsoft.com/fwlink/?LinkID=135170
+https://go.microsoft.com/fwlink/?LinkID=135170
 
 #>
 Param(
@@ -197,7 +197,7 @@ else {
         $Prompt = $pyvenvCfg['prompt'];
     }
     else {
-        Write-Verbose "  Setting prompt based on parent's directory's name. (Is the directory name passed to venv module when creating the virutal environment)"
+        Write-Verbose "  Setting prompt based on parent's directory's name. (Is the directory name passed to venv module when creating the virtual environment)"
         Write-Verbose "  Got leaf-name of $VenvDir='$(Split-Path -Path $venvDir -Leaf)'"
         $Prompt = Split-Path -Path $venvDir -Leaf
     }

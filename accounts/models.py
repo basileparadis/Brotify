@@ -24,6 +24,7 @@ class UserProfile(models.Model):
 
 
 class SocialUser(models.Model):
+    id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='default_user_pic.webp',
                                upload_to='profile_pic',

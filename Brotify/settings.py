@@ -11,24 +11,27 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import Brotify.config as config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 ROOT_PATH = os.path.dirname(__file__)
+
+config.load_and_validate(file=os.path.join(BASE_DIR, 'local.ini'),
+                         template=os.path.join(BASE_DIR, 'local.ini.template'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-SOCIAL_AUTH_SPOTIFY_KEY = '2976d161299d494288ec1360d49e9eec'
-SOCIAL_AUTH_SPOTIFY_SECRET = 'fcc929c760694cf1aac2d0eeb50ed98f'
+SOCIAL_AUTH_SPOTIFY_KEY = config.settings['APP']['social_auth_spotify_key']
+SOCIAL_AUTH_SPOTIFY_SECRET = config.settings['APP']['social_auth_spotify_secret']
 SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-library-read']
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1rv==iz)yoao&f+q6!8@b6_q8h8poxhqusz@-5pig(ka4x&f(1'
+SECRET_KEY = config.settings['APP']['secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if config.settings['APP']['debug'] in [True, 'True', 'true'] else False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'brotify.ca', '127.0.1.1']
 USE_X_FORWARDED_PORT = True
@@ -97,8 +100,12 @@ WSGI_APPLICATION = 'Brotify.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'brotify-db',
+        'ENGINE': config.settings['DATABASE']['engine'],
+        'NAME': config.settings['DATABASE']['name'],
+        'USER': config.settings['DATABASE']['user'],
+        'PASSWORD': config.settings['DATABASE']['password'],
+        'HOST': config.settings['DATABASE']['host'],
+        'PORT': config.settings['DATABASE']['port'],
     }
 }
 
@@ -174,4 +181,3 @@ CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-C_FORCE_ROOT = True

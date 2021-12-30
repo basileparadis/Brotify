@@ -4,13 +4,9 @@ venv/
 # SQLite Database
 brotify-db
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 8d986eb0b84b40acc16df3a43fd9255300974478
 # Environment variables
 local.ini
+.env
 
 # Automatically generated files
 data
@@ -18,13 +14,7 @@ Brotify/__pycache__/
 accounts/__pycache__/
 
 .idea
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 7b1f7c7d (Ignore .idea)
-=======
->>>>>>> 4813b311 (Ignore .idea)
-=======
->>>>>>> 8d986eb0b84b40acc16df3a43fd9255300974478
+
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 

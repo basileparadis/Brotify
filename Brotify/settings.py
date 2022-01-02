@@ -33,8 +33,10 @@ SECRET_KEY = config.settings['APP']['secret_key']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if config.settings['APP']['debug'] in [True, 'True', 'true'] else False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'brotify.ca', '127.0.1.1']
+ALLOWED_HOSTS = ['localhost', 'brotify.ca', 'basileparadis.com']
 USE_X_FORWARDED_PORT = True
+
+CSRF_TRUSTED_ORIGINS = ['https://brotify.ca']
 
 # Application definition
 INSTALLED_APPS = [

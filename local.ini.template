@@ -4,7 +4,6 @@ log_level = ERROR
 log_main_file = /var/log/brotify.log
 secret_key = secret_key_placeholder
 use_https = true
-worker_default_password_salt = worker_default_password_salt_placeholder
 support_email_address = basile.paradis@gmail.com
 
 [DATABASE]

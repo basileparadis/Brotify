@@ -80,7 +80,9 @@ def get_album_covers(images):
 # Obtenir l'inventaire des chansons pour un certain utilisateur
 @login_required
 def get_liked_tracks_from_bd(request):
-    liked_tracks = LikedTrack.objects.filter(user=request.user).values_list('user_song', flat=True).order_by('date_added')
+    liked_tracks = LikedTrack.objects.filter(user=request.user)\
+        .values_list('user_song', flat=True)\
+        .order_by('date_added')
     tracks = Track.objects.filter(
         id__in=liked_tracks
     )

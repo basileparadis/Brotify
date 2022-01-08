@@ -57,38 +57,45 @@ body
             display: flex
             align-items: center
 
-    .container
-        display: flex
-        flex-direction: column
-        justify-content: center
-        min-height: 75vh
+    .hero
+        height: calc(100vh - 8rem);
 
-        .tabs a
-            text-decoration: none !important
+        .container
+            display: flex
+            flex-direction: column
+            justify-content: center
+            min-height: 75vh
 
-        .tabs.is-toggle li.is-active a
-            color: #FFFFFF
-            background-color: #1DB954
-            border-color: #191414
-            font-weight: bold
+            .tabs a
+                text-decoration: none !important
 
-        .is-64x64
-            height: 64px
+            .tabs.is-toggle li.is-active a
+                color: #FFFFFF
+                background-color: #1DB954
+                border-color: #191414
+                font-weight: bold
 
-        .grid-container
-            display: grid
-            grid-template-columns: auto
-            background-color: #2196F3
+            .is-64x64
+                height: 64px
 
-            .grid-item
-                border: 1px solid rgba(0, 0, 0, 0.8)
-                padding: 15px
-                text-align: center
+            .grid-container
+                display: grid
+                grid-template-columns: auto
+                background-color: #2196F3
 
-        .button.is-info
-            pointer-events: none
-            cursor: default
+                .grid-item
+                    border: 1px solid rgba(0, 0, 0, 0.8)
+                    padding: 15px
+                    text-align: center
+
+            .button.is-info
+                pointer-events: none
+                cursor: default
 
     .footer
+        display: flex
+        justify-content: center
+        align-items: center
+        min-height: 3.25rem
         background-color: lightgray
         padding: 1.5rem 1.5rem 1.5rem

@@ -176,6 +176,11 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+BASE_URL = config.settings['APP']['base_url']
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+
 CELERY_BROKER_URL = 'redis://:pRoSiciTuSTA@redis:6379/0'
 CELERY_RESULT_BACKEND = 'redis://:pRoSiciTuSTA@redis:6379/1'
 CELERY_ACCEPT_CONTENT = ['pickle']

@@ -8,6 +8,9 @@ brotify-db
 local.ini
 .env
 
+# Node modules
+node_modules
+
 # Automatically generated files
 data
 Brotify/__pycache__/

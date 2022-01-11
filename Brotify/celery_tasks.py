@@ -74,7 +74,7 @@ def get_tracks_from_api(self, user):
         track_object_list = []
         for item in item_object_list:
             track_object_list.append(Track(
-                id_track=item['track']['id'],
+                spotify_id=item['track']['id'],
                 title=item['track']['name'],
                 artist=item['track']['artists'][0]['name'],
                 album=item['track']['album']['name'],
@@ -93,19 +93,19 @@ def get_tracks_from_api(self, user):
         for item in item_object_list:
             liked_track = LikedTrack(
                 user=user,
-                user_song=Track.objects.get(id_track=item['track']['id']),
+                user_song=Track.objects.get(spotify_id=item['track']['id']),
                 date_added=item['added_at'],
             )
             liked_track_object_list.append(liked_track)
             for artist in item['track']['artists']:
                 if artist['type'] == "artist":
                     try:
-                        artist_object, artist_created = Artist.objects.get_or_create(id_artist=artist['id'],
+                        artist_object, artist_created = Artist.objects.get_or_create(spotify_id=artist['id'],
                                                                                      name=artist['name'])
                         liked_artist_object = LikedArtist(
                             user=user,
                             liked_artist=artist_object,
-                            related_track=Track.objects.get(id_track=item['track']['id']),
+                            related_track=Track.objects.get(spotify_id=item['track']['id']),
                         )
                         liked_artist_object_list.append(liked_artist_object)
                     except IntegrityError:

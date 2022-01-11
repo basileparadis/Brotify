@@ -11376,7 +11376,7 @@ body .modal-card .delete {
 }
 
 body .hero {
-  height: calc(100vh - 8rem);
+  min-height: calc(100vh - 8rem);
 }
 
 body .hero .container {

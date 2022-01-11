@@ -21,14 +21,14 @@ import requests
 class Track(models.Model):
     id = models.BigAutoField(primary_key=True)
     spotify_id = models.CharField(max_length=24, null=False, unique=True)
-    title = models.CharField(max_length=100)
-    artist = models.CharField(max_length=100)
-    album = models.CharField(max_length=100)
-    url_cover_small = models.SlugField(max_length=100)
-    url_cover_medium = models.SlugField(max_length=100)
-    url_cover_large = models.SlugField(max_length=100)
-    url_track = models.SlugField(max_length=100)
-    url_player = models.SlugField(max_length=100, null=True)
+    title = models.CharField(max_length=500)
+    artist = models.CharField(max_length=500)
+    album = models.CharField(max_length=500)
+    url_cover_small = models.SlugField(max_length=500)
+    url_cover_medium = models.SlugField(max_length=500)
+    url_cover_large = models.SlugField(max_length=500)
+    url_track = models.SlugField(max_length=500)
+    url_player = models.SlugField(max_length=500, null=True)
     # artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     # album = models.ForeignKey(Album, on_delete=models.CASCADE)
 
@@ -43,7 +43,7 @@ class LikedTrack(models.Model):
 class Artist(models.Model):
     id = models.BigAutoField(primary_key=True)
     spotify_id = models.CharField(max_length=25, null=False, unique=True)
-    name = models.CharField(max_length=100, null=False)
+    name = models.CharField(max_length=500, null=False)
 
 
 class LikedArtist(models.Model):
@@ -56,7 +56,7 @@ class LikedArtist(models.Model):
 class Album(models.Model):
     id = models.BigAutoField(primary_key=True)
     spotify_id = models.CharField(max_length=25, default='')
-    name = models.CharField(max_length=100, default='')
+    name = models.CharField(max_length=500, default='')
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
 
 

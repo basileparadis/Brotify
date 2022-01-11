@@ -13,7 +13,9 @@ services:
 
   redis:
     image: "redis:alpine"
-    command: redis-server --requirepass pRoSiciTuSTA
+    env_file: ./.env
+    command: >
+      --requirepass $REDIS_PASSWORD
     environment:
      - REDIS_REPLICATION_MODE=master
      - C_FORCE_ROOT=true

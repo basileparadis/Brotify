@@ -11358,7 +11358,7 @@ body .navbar .navbar-brand #navigation {
   display: none;
 }
 
-body .navbar a.navbar-item {
+body .navbar .navbar-item {
   font-family: Gotham-Light;
   font-weight: bold;
   color: black;
@@ -11366,46 +11366,63 @@ body .navbar a.navbar-item {
   align-items: center;
 }
 
-body .container {
+body .modal-card {
+  padding: 5px;
+}
+
+body .modal-card .delete {
+  position: absolute;
+  right: 15px;
+}
+
+body .hero {
+  height: calc(100vh - 8rem);
+}
+
+body .hero .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 75vh;
 }
 
-body .container .tabs a {
+body .hero .container .tabs a {
   text-decoration: none !important;
 }
 
-body .container .tabs.is-toggle li.is-active a {
+body .hero .container .tabs.is-toggle li.is-active a {
   color: #FFFFFF;
   background-color: #1DB954;
   border-color: #191414;
   font-weight: bold;
 }
 
-body .container .is-64x64 {
+body .hero .container .is-64x64 {
   height: 64px;
 }
 
-body .container .grid-container {
+body .hero .container .grid-container {
   display: grid;
   grid-template-columns: auto;
   background-color: #2196F3;
 }
 
-body .container .grid-container .grid-item {
+body .hero .container .grid-container .grid-item {
   border: 1px solid rgba(0, 0, 0, 0.8);
   padding: 15px;
   text-align: center;
 }
 
-body .container .button.is-info {
+body .hero .container .button.is-info {
   pointer-events: none;
   cursor: default;
 }
 
 body .footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 3.25rem;
   background-color: lightgray;
   padding: 1.5rem 1.5rem 1.5rem;
 }

@@ -28,10 +28,10 @@ RUN python3 -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Install npm packages
-#RUN npm install
+# RUN npm install
 
 # Mounts the application code to the image
 COPY . /code/
 COPY entrypoint.sh /entrypoint.sh
 
-RUN celery -A Brotify worker -l info --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -D
+# RUN celery -A Brotify worker -l info --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -D

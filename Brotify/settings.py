@@ -181,8 +181,8 @@ SESSION_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
-CELERY_BROKER_URL = 'redis://:'+config.settings['REDIS']['password']+'@redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://:'+config.settings['REDIS']['password']+'@redis:6379/1'
+CELERY_BROKER_URL = 'redis://:'+str(config.settings['REDIS']['password'])+'@redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://:'+str(config.settings['REDIS']['password'])+'@redis:6379/1'
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_TASK_SERIALIZER = 'pickle'

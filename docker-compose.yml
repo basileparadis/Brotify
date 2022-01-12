@@ -25,6 +25,7 @@ services:
     command: python manage.py runserver 0.0.0.0:5000
     volumes:
       - .:/code
+      - ./Brotify/static:/static
     ports:
       - "5000:5000"
     environment:

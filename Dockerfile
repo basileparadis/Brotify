@@ -2,28 +2,34 @@
 
 # Use an official Python runtime as a parent image
 FROM python:3.8.9
+
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create & activate venv
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Set work directory
+WORKDIR /usr/src/app
 
-# Install npm
-#RUN apt-get update -yq \
-#    && apt-get -yq install curl gnupg ca-certificates \
-#    && curl -L https://deb.nodesource.com/setup_12.x | bash \
-#    && apt-get update -yq \
-#    && apt-get install -yq \
-#        dh-autoreconf=19 \
-#        ruby=1:2.5.* \
-#        ruby-dev=1:2.5.* \
-#        nodejs
+# Create directory for the app user
+RUN mkdir -p /home/app
+
+# Create the app user
+RUN addgroup --system app && adduser --system --group app
+
+# Create the appropriate directories
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+# Create & activate venv
+# ENV VIRTUAL_ENV=$APP_HOME/venv
+# RUN python3 -m venv $VIRTUAL_ENV
+# NV PATH="$VIRTUAL_ENV/bin:$PATH"
+# ENV PYTHONPATH=$APP_HOME
 
 # Allows docker to cache installed dependencies between builds
-WORKDIR /code
-COPY requirements.txt /code/
+COPY requirements.txt $APP_HOME
 RUN python3 -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
@@ -31,7 +37,13 @@ RUN pip install -r requirements.txt
 # RUN npm install
 
 # Mounts the application code to the image
-COPY . /code/
-COPY entrypoint.sh /entrypoint.sh
+COPY . $APP_HOME
+COPY entrypoint.sh $APP_HOME/entrypoint.sh
+
+# chown all the files to the app user
+RUN chown -R app:app $APP_HOME
+
+# change to the app user
+USER app
 
 # RUN celery -A Brotify worker -l info --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -D

@@ -1,4 +1,4 @@
-![logo](https://user-images.githubusercontent.com/13698460/149632317-23c53b4d-b451-4b0c-bd69-35910638d906.png)
+![logo](https://user-images.githubusercontent.com/13698460/149632361-5c43bb83-7401-4022-9a50-b0b67f068bec.png)
 
 # Brotify
 

@@ -178,8 +178,10 @@ INTERNAL_IPS = [
 
 BASE_URL = config.settings['APP']['base_url']
 SESSION_COOKIE_SAMESITE = None
-SESSION_COOKIE_SECURE = True
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+SESSION_COOKIE_SECURE = True if config.settings['APP']['session_cookie_secure'] in [True, 'True', 'true'] else False
+CSRF_COOKIE_SECURE = True if config.settings['APP']['csrf_cookie_secure'] in [True, 'True', 'true'] else False
+SECURE_SSL_REDIRECT = True if config.settings['APP']['secure_ssl_redirect'] in [True, 'True', 'true'] else False
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True if config.settings['APP']['social_auth_redirect_is_https'] in [True, 'True', 'true'] else False
 
 CELERY_BROKER_URL = 'redis://:'+str(config.settings['REDIS']['password'])+'@redis:6379/0'
 CELERY_RESULT_BACKEND = 'redis://:'+str(config.settings['REDIS']['password'])+'@redis:6379/1'

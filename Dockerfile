@@ -7,16 +7,13 @@ FROM python:3.8.9
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set work directory
-WORKDIR /usr/src/app
-
 # Create directory for the app user
 RUN mkdir -p /home/app
 
 # Create the app user
 RUN addgroup --system app && adduser --system --group app
 
-# Create the appropriate directories
+# Set work directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME

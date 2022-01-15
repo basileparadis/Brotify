@@ -1,4 +1,6 @@
-# Brotify ![brotify_icon](https://user-images.githubusercontent.com/13698460/149631182-121a4c74-80e1-4f67-8ffb-f5c0da35e30e.png)
+![brotify_logo](https://user-images.githubusercontent.com/13698460/149631518-4b37f086-b62b-4a37-b45e-b07daf57b371.png)
+
+# Brotify
 
 [EN]
 A small-scale social website using the Spotify API that allows users to see the common musical interests they share between friends with graphical details.

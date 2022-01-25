@@ -7,16 +7,24 @@ FROM python:3.8.9
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create directory for the app user
-RUN mkdir -p /home/app
-
 # Create the app user
 RUN addgroup --system app && adduser --system --group app
+
+# Mounts the application code to the image
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+COPY . $APP_HOME
+COPY entrypoint.sh $APP_HOME/entrypoint.sh
+
+# chown all the files to the app user
+RUN chown -R app:app $APP_HOME
+
+# change to the app user
+USER app
 
 # Set work directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
-RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 # Create & activate venv
@@ -32,15 +40,5 @@ RUN pip install -r requirements.txt
 
 # Install npm packages
 # RUN npm install
-
-# Mounts the application code to the image
-COPY . $APP_HOME
-COPY entrypoint.sh $APP_HOME/entrypoint.sh
-
-# chown all the files to the app user
-RUN chown -R app:app $APP_HOME
-
-# change to the app user
-USER app
 
 # RUN celery -A Brotify worker -l info --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -D

@@ -20,6 +20,15 @@ services:
      - REDIS_REPLICATION_MODE=master
      - C_FORCE_ROOT=true
 
+  nginx-static:
+    image: nginx:latest
+    volumes:
+      - ./src:/src
+      - ./config/nginx:/etc/nginx/conf.d
+      - /static:/static
+    depends_on:
+      - app
+
   app:
     build: .
     command: python manage.py runserver 0.0.0.0:5000

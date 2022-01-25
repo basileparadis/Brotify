@@ -11383,7 +11383,7 @@ body .hero .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 75vh;
+  min-height: 70vh;
 }
 
 body .hero .container .tabs a {

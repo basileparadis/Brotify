@@ -35,7 +35,7 @@ numpy==1.21.5
 oauthlib==3.1.1
 packaging==21.3
 pilkit==2.0
-Pillow==9.0.0
+Pillow==9.0.1
 pip-upgrade-outdated==1.5
 progressbar2==3.55.0
 prompt-toolkit==3.0.24

@@ -41,7 +41,7 @@ progressbar2==3.55.0
 prompt-toolkit==3.0.24
 psycopg2==2.9.3
 pycparser==2.21
-PyJWT==2.3.0
+PyJWT==2.4.0
 pyparsing==3.0.6
 python-dateutil==2.8.2
 python-utils==2.6.3

@@ -4,7 +4,18 @@ log_level = ERROR
 log_main_file = /var/log/brotify.log
 secret_key = secret_key_placeholder
 use_https = true
+worker_default_password_salt = worker_default_password_salt_placeholder
 support_email_address = basile.paradis@gmail.com
+social_auth_spotify_key = spotify_key_placeholder
+social_auth_spotify_secret = spotify_secret_placeholder
+django_su_name = su_name_placeholder
+django_su_email = su_email_placeholder
+django_su_password = su_password_placeholder
+base_url = base_url_placeholder
+session_cookie_secure = false
+csrf_cookie_secure = false
+secure_ssl_redirect = false
+social_auth_redirect_is_https = false
 
 [DATABASE]
 engine = database_engine_placeholder
@@ -16,6 +27,9 @@ password = database_password_placeholder
 # https://docs.djangoproject.com/en/3.0/ref/settings/#conn-max-age
 connection_max_age = 0
 
+[REDIS]
+password = redis_password_placeholder
+
 [SMTP]
 backend = smtp_backend_placeholder
 host = smtp_host_placeholder
@@ -25,7 +39,7 @@ user = smtp_user_placeholder
 password = smtp_password_placeholder
 
 [AMQP]
-url = amqp://guest:guest@localhost
+url = amqp://localhost:5672
 queue = data_input
 messaging_queue = messaging_hub_v3
 alerts_queue = alerts

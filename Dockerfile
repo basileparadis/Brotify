@@ -34,6 +34,7 @@ WORKDIR $APP_HOME
 # ENV PYTHONPATH=$APP_HOME
 
 # Allows docker to cache installed dependencies between builds
+ENV PATH="${HOME}/.local/bin:${PATH}"
 COPY requirements.txt $APP_HOME
 RUN python3 -m pip install --upgrade pip
 RUN pip install -r requirements.txt

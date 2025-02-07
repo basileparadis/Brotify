@@ -17,21 +17,30 @@ import Brotify.config as config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_PATH = os.path.dirname(__file__)
 
-config.load_and_validate(file=os.path.join(BASE_DIR, 'local.ini'),
-                         template=os.path.join(BASE_DIR, 'local.ini.template'))
+# Load and validate the configuration file
+config.load_and_validate(file=os.path.join(BASE_DIR, 'env.yaml'),
+                         template=os.path.join(BASE_DIR, 'env.template.yaml'))
+
+# Vérifiez que toutes les sections nécessaires sont présentes
+required_sections = ['APP', 'DATABASE', 'REDIS', 'SMTP', 'AMQP']
+missing_sections = [section for section in required_sections if section not in config.settings]
+
+if missing_sections:
+    raise RuntimeError(f"Config validation failed for {os.path.join(BASE_DIR, 'env.yaml')}\n"
+                       f"Missing sections: {', '.join(missing_sections)}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
-SOCIAL_AUTH_SPOTIFY_KEY = config.settings['APP']['social_auth_spotify_key']
-SOCIAL_AUTH_SPOTIFY_SECRET = config.settings['APP']['social_auth_spotify_secret']
+SOCIAL_AUTH_SPOTIFY_KEY = config.load_secret('APP_SOCIAL_AUTH_SPOTIFY_KEY')
+SOCIAL_AUTH_SPOTIFY_SECRET = config.load_secret('APP_SOCIAL_AUTH_SPOTIFY_SECRET')
 SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-library-read']
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config.settings['APP']['secret_key']
+SECRET_KEY = config.load_secret('APP_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if config.settings['APP']['debug'] in [True, 'True', 'true'] else False
+DEBUG = True if config.settings['APP']['DEBUG'] in [True, 'True', 'true'] else False
 
 ALLOWED_HOSTS = ['localhost', 'brotify.ca', 'basileparadis.com']
 USE_X_FORWARDED_PORT = True
@@ -102,12 +111,12 @@ WSGI_APPLICATION = 'Brotify.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': config.settings['DATABASE']['engine'],
-        'NAME': config.settings['DATABASE']['name'],
-        'USER': config.settings['DATABASE']['user'],
-        'PASSWORD': config.settings['DATABASE']['password'],
-        'HOST': config.settings['DATABASE']['host'],
-        'PORT': config.settings['DATABASE']['port'],
+        'ENGINE': config.settings['DATABASE']['ENGINE'],
+        'NAME': config.settings['DATABASE']['NAME'],
+        'USER': open(config.settings['DATABASE']['USER']).read().strip(),
+        'PASSWORD': open(config.settings['DATABASE']['PASSWORD']).read().strip(),
+        'HOST': config.settings['DATABASE']['HOST'],
+        'PORT': config.settings['DATABASE']['PORT'],
     }
 }
 
@@ -176,13 +185,13 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-BASE_URL = config.settings['APP']['base_url']
+BASE_URL = config.settings['APP']['BASE_URL']
 SESSION_COOKIE_SAMESITE = None
 SESSION_COOKIE_SECURE = True
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
-CELERY_BROKER_URL = 'redis://:' + config.settings['REDIS']['password'] + '@redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://:' + config.settings['REDIS']['password'] + '@redis:6379/1'
+CELERY_BROKER_URL = 'redis://:' + config.load_secret('REDIS_PASSWORD') + '@redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://:' + config.load_secret('REDIS_PASSWORD') + '@redis:6379/1'
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_RESULT_SERIALIZER = 'pickle'
 CELERY_TASK_SERIALIZER = 'pickle'

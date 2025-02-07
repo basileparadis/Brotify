@@ -16,9 +16,9 @@ class Migration(migrations.Migration):
 
     def generate_superuser(apps, schema_editor):
 
-        DJANGO_SU_NAME = config.settings['APP']['django_su_name']
-        DJANGO_SU_EMAIL = config.settings['APP']['django_su_email']
-        DJANGO_SU_PASSWORD = config.settings['APP']['django_su_password']
+        DJANGO_SU_NAME = config.settings['APP']['DJANGO_SU_NAME']
+        DJANGO_SU_EMAIL = config.settings['APP']['DJANGO_SU_EMAIL']
+        DJANGO_SU_PASSWORD = config.load_secret('APP_DJANGO_SU_PASSWORD')
 
         superuser = User.objects.create_superuser(
             username=DJANGO_SU_NAME,

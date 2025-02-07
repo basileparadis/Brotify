@@ -4,9 +4,9 @@ venv/
 # SQLite Database
 brotify-db
 
-# Environment variables
-local.ini
-.env
+# Environment variables & secrets
+env.yaml
+secrets/
 
 # Node modules
 node_modules

@@ -1,28 +1,37 @@
 services:
   brotify-db:
-    image: postgres
+    image: postgres:latest
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_NAME_FILE: /run/secrets/POSTGRES_NAME
+      POSTGRES_DB_FILE: /run/secrets/POSTGRES_DB
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -h $POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/POSTGRES_USER) -h $$(cat /run/secrets/POSTGRES_DB)"]
       interval: 30s
       timeout: 30s
+    secrets:
+      - POSTGRES_NAME
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    env_file:
+      - ./env.yaml
 
   redis:
-      image: redis:latest
-      restart: always
-      command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
-      environment:
-        - C_FORCE_ROOT=true
-        - REDIS_PASSWORD=${REDIS_PASSWORD}
-      ports:
-        - "6379:6379"
-      env_file:
-        - .env
+    image: redis:latest
+    restart: always
+    command: /bin/sh -c "redis-server --requirepass $$(cat /run/secrets/REDIS_PASSWORD)"
+    environment:
+      - C_FORCE_ROOT=true
+    ports:
+      - "6379:6379"
+    secrets:
+      - REDIS_PASSWORD
+    env_file:
+      - ./env.yaml
 
   nginx-static:
     image: nginx:latest
@@ -38,15 +47,48 @@ services:
     volumes:
       - .:/code
       - ./Brotify/static:/static:ro
-      - ./local.ini:/code/local.ini
+      - ./env.yaml:/code/env.yaml
     ports:
       - "5000:5000"
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_HOST=${POSTGRES_NAME}
     depends_on:
       - brotify-db
       - redis
-    entrypoint: ./entrypoint.sh
+    secrets:
+      - APP_SECRET_KEY
+      - APP_WORKER_DEFAULT_PASSWORD_SALT
+      - APP_SOCIAL_AUTH_SPOTIFY_KEY
+      - APP_SOCIAL_AUTH_SPOTIFY_SECRET
+      - APP_DJANGO_SU_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - REDIS_PASSWORD
+      - SMTP_USER
+      - SMTP_PASSWORD
+    env_file:
+      - ./env.yaml
+
+secrets:
+  APP_SECRET_KEY:
+    file: ./run/secrets/APP_SECRET_KEY
+  APP_WORKER_DEFAULT_PASSWORD_SALT:
+    file: ./run/secrets/APP_WORKER_DEFAULT_PASSWORD_SALT
+  APP_SOCIAL_AUTH_SPOTIFY_KEY:
+    file: ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_KEY
+  APP_SOCIAL_AUTH_SPOTIFY_SECRET:
+    file: ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_SECRET
+  APP_DJANGO_SU_PASSWORD:
+    file: ./run/secrets/APP_DJANGO_SU_PASSWORD
+  POSTGRES_NAME:
+    file: ./run/secrets/POSTGRES_NAME
+  POSTGRES_DB:
+    file: ./run/secrets/POSTGRES_DB
+  POSTGRES_USER:
+    file: ./run/secrets/POSTGRES_USER
+  POSTGRES_PASSWORD:
+    file: ./run/secrets/POSTGRES_PASSWORD
+  REDIS_PASSWORD:
+    file: ./run/secrets/REDIS_PASSWORD
+  SMTP_USER:
+    file: ./run/secrets/SMTP_USER
+  SMTP_PASSWORD:
+    file: ./run/secrets/SMTP_PASSWORD

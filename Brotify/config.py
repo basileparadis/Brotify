@@ -1,58 +1,41 @@
 import os
-from configparser import ConfigParser
+import yaml
 
-# Don't import this directly, import the module instead
 settings = None
 
+def load_secret(secret_name):
+    secret_path = f"/run/secrets/{secret_name}"
+    if os.path.isfile(secret_path):
+        with open(secret_path, 'r') as secret_file:
+            return secret_file.read().strip()
+    return None
 
 def load_and_validate(file, template):
     global settings
 
-    template_parser = ConfigParser()
-    template_parser.optionxform = str
-    template_parser.read(template)
-    errors = []
+    with open(template, 'r') as template_file:
+        template_data = yaml.safe_load(template_file)
 
     if file and os.path.isfile(file):
-        config_parser = ConfigParser()
-        config_parser.read(file)
-
-        for section_name, section_proxy in template_parser.items():
-            if section_name not in config_parser:
-                errors.append('Section [{}] missing'.format(section_name))
-                continue
-
-            config_section = config_parser[section_name]
-            for option in section_proxy:
-                if (option not in config_section and (
-                        section_name == template_parser.default_section or option not in template_parser.defaults())):
-                    errors.append('Option {} missing in section {}'.format(option, section_name))
-                else:
-                    # if ENV-VAR exist, use it, else use value from local.ini
-                    # ENV-VAR Name if formatted like this: SECTION-NAME_OPTION-NAME
-                    config_section[option] = os.getenv('_'.join([section_name, option]), config_section[option])
-
+        with open(file, 'r') as stream:
+            config_data = yaml.safe_load(stream)
     else:
-        # if local.ini file do not exist, only use env var to setup the app
-        config_parser = {}
-        for section_name, section_proxy in template_parser.items():
-            config_parser[section_name] = {}
-            for option in section_proxy:
-                config_parser[section_name][option] = {}
-                # ENV-VAR Name if formatted like this: SECTION-NAME_OPTION-NAME
-                value = os.getenv('_'.join([section_name, option]))
+        config_data = {}
 
-                if value:
-                    config_parser[section_name][option] = value
-                else:
-                    errors.append('Option {} missing in ENV_VAR (local.ini do not exist)'.format(
-                        '_'.join([section_name, option])))
+    errors = []
+    for section, options in template_data.items():
+        if section not in config_data:
+            errors.append(f'Section {section} missing in configuration')
+            continue
+        for key, value in options.items():
+            if key not in config_data[section]:
+                errors.append(f'Key {key} missing in section {section}')
+            else:
+                secret_value = load_secret(f'{section}_{key}')
+                config_data[section][key] = secret_value if secret_value else os.getenv(f'{section}_{key}', config_data[section][key])
 
     if errors:
-        # errors.append("\n-----PRINTENV-----")
-        for param in os.environ.keys():
-            errors.append('{}={}'.format(param, os.environ[param]))
-            raise RuntimeError('Config validation failed for {}\n'.format(file) + '\n'.join(errors))
+        raise RuntimeError('Config validation failed for {}\n'.format(file) + '\n'.join(errors))
 
-    settings = config_parser
+    settings = config_data
     return settings

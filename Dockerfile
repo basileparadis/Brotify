@@ -1,45 +1,37 @@
-# Dockerfile
-
 # Use an official Python runtime as a parent image
 FROM python:3.8.9
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PORT=5000
+ENV HOME=/home/app
+ENV APP_HOME=/home/app/web
+ENV PATH="/home/app/.local/bin:${PATH}"
 
 # Create the app user
 RUN addgroup --system app && adduser --system --group app
 
-# Mounts the application code to the image
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
-COPY . $APP_HOME
-COPY entrypoint.sh $APP_HOME/entrypoint.sh
-
-# chown all the files to the app user
-RUN chown -R app:app $APP_HOME
-
-# change to the app user
-USER app
-
-# Set work directories
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
+# Set work directory
 WORKDIR $APP_HOME
 
-# Create & activate venv
-# ENV VIRTUAL_ENV=$APP_HOME/venv
-# RUN python3 -m venv $VIRTUAL_ENV
-# NV PATH="$VIRTUAL_ENV/bin:$PATH"
-# ENV PYTHONPATH=$APP_HOME
+# Copy requirements first
+COPY requirements.txt .
 
-# Allows docker to cache installed dependencies between builds
-ENV PATH="${HOME}/.local/bin:${PATH}"
-COPY requirements.txt $APP_HOME
-RUN python3 -m pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Install dependencies as root for system-wide installation
+RUN python3 -m pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# Install npm packages
-# RUN npm install
+# Copy the project files
+COPY . .
+COPY entrypoint.sh .
 
-# RUN celery -A Brotify worker -l info --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -D
+# Make entrypoint executable and fix permissions
+RUN chmod +x entrypoint.sh && \
+    chown -R app:app $APP_HOME
+
+# Change to the app user
+USER app
+
+# Set the entrypoint
+ENTRYPOINT ["./entrypoint.sh"]

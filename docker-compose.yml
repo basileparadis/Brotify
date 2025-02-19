@@ -2,93 +2,131 @@ services:
   brotify-db:
     image: postgres:latest
     environment:
-      POSTGRES_NAME_FILE: /run/secrets/POSTGRES_NAME
-      POSTGRES_DB_FILE: /run/secrets/POSTGRES_DB
-      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
-      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+      POSTGRES_NAME_FILE: /run/secrets/POSTGRES_NAME/key
+      POSTGRES_DB_FILE: /run/secrets/POSTGRES_DB/key
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER/key
+      POSTGRES_HOST_FILE: /run/secrets/POSTGRES_HOST/key
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD/key
+    volumes:
+      - ./run/secrets/POSTGRES_DB:/run/secrets/POSTGRES_DB:ro
+      - ./run/secrets/POSTGRES_NAME:/run/secrets/POSTGRES_NAME:ro
+      - ./run/secrets/POSTGRES_USER:/run/secrets/POSTGRES_USER:ro
+      - ./run/secrets/POSTGRES_HOST:/run/secrets/POSTGRES_HOST:ro
+      - ./run/secrets/POSTGRES_PASSWORD:/run/secrets/POSTGRES_PASSWORD:ro
     ports:
-      - "5432:5432"
+      - "2345:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/POSTGRES_USER) -h $$(cat /run/secrets/POSTGRES_DB)"]
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/POSTGRES_USER/key) -h $$(cat /run/secrets/POSTGRES_DB/key)"]
       interval: 30s
       timeout: 30s
     secrets:
       - POSTGRES_NAME
       - POSTGRES_DB
       - POSTGRES_USER
+      - POSTGRES_HOST
       - POSTGRES_PASSWORD
     env_file:
       - ./env.yaml
 
+  # cloudsql-proxy:
+  #   container_name: cloudsql-proxy
+  #   image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:latest
+  #   command: brotify:us-central1:brotify-db --credentials-file=/secrets/cloudsql/private-key.json --address 0.0.0.0 --port 5432
+  #   networks:
+  #     - sql-bridge
+  #   ports:
+  #     - 127.0.0.1:5432:5432
+  #   volumes:
+  #     - ./run/secrets/private-key.json:/secrets/cloudsql/private-key.json:ro
+
   redis:
     image: redis:latest
     restart: always
-    command: /bin/sh -c "redis-server --requirepass $$(cat /run/secrets/REDIS_PASSWORD)"
+    command: /bin/sh -c "redis-server --requirepass $$(cat /run/secrets/REDIS_PASSWORD/key)"
     environment:
       - C_FORCE_ROOT=true
     ports:
       - "6379:6379"
+    volumes:
+      - ./run/secrets/REDIS_PASSWORD:/run/secrets/REDIS_PASSWORD:ro
     secrets:
       - REDIS_PASSWORD
     env_file:
       - ./env.yaml
 
-  nginx-static:
-    image: nginx:latest
-    volumes:
-      - ./src:/src
-      - ./config/nginx:/etc/nginx/conf.d
-    depends_on:
-      - app
-
   app:
     build: .
     entrypoint: /code/entrypoint.sh
     command: python manage.py runserver 0.0.0.0:5000
+    networks:
+      - sql-bridge
     volumes:
       - .:/code
       - ./Brotify/static:/static:ro
       - ./env.yaml:/code/env.yaml
+      - ./run/secrets/APP_DJANGO_SU_PASSWORD:/run/secrets/APP_DJANGO_SU_PASSWORD:ro
+      - ./run/secrets/APP_SECRET_KEY:/run/secrets/APP_SECRET_KEY:ro
+      - ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_KEY:/run/secrets/APP_SOCIAL_AUTH_SPOTIFY_KEY:ro
+      - ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_SECRET:/run/secrets/APP_SOCIAL_AUTH_SPOTIFY_SECRET:ro
+      - ./run/secrets/POSTGRES_DB:/run/secrets/POSTGRES_DB:ro
+      - ./run/secrets/POSTGRES_NAME:/run/secrets/POSTGRES_NAME:ro
+      - ./run/secrets/POSTGRES_USER:/run/secrets/POSTGRES_USER:ro
+      - ./run/secrets/POSTGRES_HOST:/run/secrets/POSTGRES_HOST:ro
+      - ./run/secrets/POSTGRES_PASSWORD:/run/secrets/POSTGRES_PASSWORD:ro
+      - ./run/secrets/REDIS_PASSWORD:/run/secrets/REDIS_PASSWORD:ro
     ports:
       - "5000:5000"
     environment:
-      - PORT=5000 
+      - PORT=5000
+      - APP_DJANGO_SU_PASSWORD=/run/secrets/APP_DJANGO_SU_PASSWORD/key
+      - APP_SECRET_KEY=/run/secrets/APP_SECRET_KEY/key
+      - APP_SOCIAL_AUTH_SPOTIFY_KEY=/run/secrets/APP_SOCIAL_AUTH_SPOTIFY_KEY/key
+      - APP_SOCIAL_AUTH_SPOTIFY_SECRET=/run/secrets/APP_SOCIAL_AUTH_SPOTIFY_SECRET/key
+      - POSTGRES_DB=/run/secrets/POSTGRES_DB/key
+      - POSTGRES_NAME=/run/secrets/POSTGRES_NAME/key
+      - POSTGRES_HOST=/run/secrets/POSTGRES_HOST/key
+      - POSTGRES_PASSWORD=/run/secrets/POSTGRES_PASSWORD/key
+      - REDIS_PASSWORD=/run/secrets/REDIS_PASSWORD/key
     depends_on:
-      - brotify-db
+      #- cloudsql-proxy
+      #- brotify-db
       - redis
     secrets:
       - APP_SECRET_KEY
       - APP_SOCIAL_AUTH_SPOTIFY_KEY
       - APP_SOCIAL_AUTH_SPOTIFY_SECRET
       - APP_DJANGO_SU_PASSWORD
+      - POSTGRES_NAME
+      - POSTGRES_DB
       - POSTGRES_USER
+      - POSTGRES_HOST
       - POSTGRES_PASSWORD
       - REDIS_PASSWORD
     env_file:
       - ./env.yaml
 
 secrets:
-  APP_SECRET_KEY:
-    file: ./run/secrets/APP_SECRET_KEY
-  APP_WORKER_DEFAULT_PASSWORD_SALT:
-    file: ./run/secrets/APP_WORKER_DEFAULT_PASSWORD_SALT
-  APP_SOCIAL_AUTH_SPOTIFY_KEY:
-    file: ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_KEY
-  APP_SOCIAL_AUTH_SPOTIFY_SECRET:
-    file: ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_SECRET
   APP_DJANGO_SU_PASSWORD:
-    file: ./run/secrets/APP_DJANGO_SU_PASSWORD
+    file: ./run/secrets/APP_DJANGO_SU_PASSWORD/key
+  APP_SECRET_KEY:
+    file: ./run/secrets/APP_SECRET_KEY/key
+  APP_SOCIAL_AUTH_SPOTIFY_KEY:
+    file: ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_KEY/key
+  APP_SOCIAL_AUTH_SPOTIFY_SECRET:
+    file: ./run/secrets/APP_SOCIAL_AUTH_SPOTIFY_SECRET/key
   POSTGRES_NAME:
-    file: ./run/secrets/POSTGRES_NAME
+    file: ./run/secrets/POSTGRES_NAME/key
   POSTGRES_DB:
-    file: ./run/secrets/POSTGRES_DB
+    file: ./run/secrets/POSTGRES_DB/key
   POSTGRES_USER:
-    file: ./run/secrets/POSTGRES_USER
+    file: ./run/secrets/POSTGRES_USER/key
+  POSTGRES_HOST:
+    file: ./run/secrets/POSTGRES_HOST/key
   POSTGRES_PASSWORD:
-    file: ./run/secrets/POSTGRES_PASSWORD
+    file: ./run/secrets/POSTGRES_PASSWORD/key
   REDIS_PASSWORD:
-    file: ./run/secrets/REDIS_PASSWORD
-  SMTP_USER:
-    file: ./run/secrets/SMTP_USER
-  SMTP_PASSWORD:
-    file: ./run/secrets/SMTP_PASSWORD
+    file: ./run/secrets/REDIS_PASSWORD/key
+
+networks:
+  sql-bridge:
+    driver: bridge

@@ -4,7 +4,7 @@ import yaml
 settings = None
 
 def load_secret(secret_name):
-    secret_path = f"/run/secrets/{secret_name}"
+    secret_path = f"/run/secrets/{secret_name}/key"
     if os.path.isfile(secret_path):
         with open(secret_path, 'r') as secret_file:
             return secret_file.read().strip()

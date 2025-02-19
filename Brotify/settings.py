@@ -21,6 +21,9 @@ ROOT_PATH = os.path.dirname(__file__)
 config.load_and_validate(file=os.path.join(BASE_DIR, 'env.yaml'),
                          template=os.path.join(BASE_DIR, 'env.template.yaml'))
 
+# Determine if running locally or in the cloud
+IS_LOCAL = config.settings['APP'].get('IS_LOCAL', 'false').lower() == 'true'
+
 # Vérifiez que toutes les sections nécessaires sont présentes
 required_sections = ['APP', 'DATABASE', 'REDIS', 'SMTP', 'AMQP']
 missing_sections = [section for section in required_sections if section not in config.settings]
@@ -42,7 +45,7 @@ SECRET_KEY = config.load_secret('APP_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if config.settings['APP']['DEBUG'] in [True, 'True', 'true'] else False
 
-ALLOWED_HOSTS = ['localhost', 'brotify.ca', 'basileparadis.com']
+ALLOWED_HOSTS = ['localhost', 'brotify.ca', 'basileparadis.com', 'brotify-308991867745.us-central1.run.app']
 USE_X_FORWARDED_PORT = True
 
 CSRF_TRUSTED_ORIGINS = ['https://brotify.ca']
@@ -109,13 +112,14 @@ WSGI_APPLICATION = 'Brotify.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# Database configuration
 DATABASES = {
     'default': {
         'ENGINE': config.settings['DATABASE']['ENGINE'],
+        'HOST': open(config.settings['DATABASE']['HOST']).read().strip(),
         'NAME': config.settings['DATABASE']['NAME'],
         'USER': open(config.settings['DATABASE']['USER']).read().strip(),
         'PASSWORD': open(config.settings['DATABASE']['PASSWORD']).read().strip(),
-        'HOST': config.settings['DATABASE']['HOST'],
         'PORT': config.settings['DATABASE']['PORT'],
     }
 }

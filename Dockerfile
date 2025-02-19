@@ -22,6 +22,9 @@ COPY requirements.txt .
 RUN python3 -m pip install --upgrade pip && \
     pip install -r requirements.txt
 
+# Expose the port
+EXPOSE 5000
+
 # Copy the project files
 COPY . .
 COPY entrypoint.sh .

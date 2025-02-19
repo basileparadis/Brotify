@@ -28,17 +28,6 @@ services:
     env_file:
       - ./env.yaml
 
-  # cloudsql-proxy:
-  #   container_name: cloudsql-proxy
-  #   image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:latest
-  #   command: brotify:us-central1:brotify-db --credentials-file=/secrets/cloudsql/private-key.json --address 0.0.0.0 --port 5432
-  #   networks:
-  #     - sql-bridge
-  #   ports:
-  #     - 127.0.0.1:5432:5432
-  #   volumes:
-  #     - ./run/secrets/private-key.json:/secrets/cloudsql/private-key.json:ro
-
   redis:
     image: redis:latest
     restart: always
@@ -88,8 +77,6 @@ services:
       - POSTGRES_PASSWORD=/run/secrets/POSTGRES_PASSWORD/key
       - REDIS_PASSWORD=/run/secrets/REDIS_PASSWORD/key
     depends_on:
-      #- cloudsql-proxy
-      #- brotify-db
       - redis
     secrets:
       - APP_SECRET_KEY
